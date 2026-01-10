@@ -1,0 +1,188 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model event_reminders {
+  id            String   @id
+  eventId       String
+  minutesBefore Int
+  notified      Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  events        events   @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model events {
+  id                String            @id
+  title             String
+  description       String?
+  type              EventType         @default(PERSONAL)
+  startDate         DateTime
+  endDate           DateTime
+  location          String?
+  isAllDay          Boolean           @default(false)
+  recurrence        EventRecurrence   @default(NONE)
+  recurrenceEndDate DateTime?
+  color             String?
+  userId            String
+  attendees         String[]
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime
+  event_reminders   event_reminders[]
+  users             users             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reminders         reminders[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model reminders {
+  id               String         @id
+  title            String
+  description      String?
+  type             ReminderType
+  status           ReminderStatus @default(PENDING)
+  triggerAt        DateTime
+  snoozedUntil     DateTime?
+  taskId           String?
+  eventId          String?
+  userId           String
+  notificationSent Boolean        @default(false)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime
+  events           events?        @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  tasks            tasks?         @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  users            users          @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model task_categories {
+  id        String   @id
+  name      String
+  color     String
+  icon      String?
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  users     users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tasks     tasks[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model tasks {
+  id              String           @id
+  title           String
+  description     String?
+  status          TaskStatus       @default(TODO)
+  priority        TaskPriority     @default(MEDIUM)
+  categoryId      String?
+  dueDate         DateTime?
+  completedAt     DateTime?
+  userId          String
+  tags            String[]
+  estimatedTime   Int?
+  actualTime      Int?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime
+  reminders       reminders[]
+  task_categories task_categories? @relation(fields: [categoryId], references: [id])
+  users           users            @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model user_preferences {
+  id                           String   @id
+  userId                       String   @unique
+  theme                        String   @default("auto")
+  language                     String   @default("pt-BR")
+  notificationEmail            Boolean  @default(true)
+  notificationPush             Boolean  @default(true)
+  notificationTaskReminders    Boolean  @default(true)
+  notificationEventReminders   Boolean  @default(true)
+  notificationWeeklyReport     Boolean  @default(true)
+  notificationMonthlyReport    Boolean  @default(true)
+  calendarDefaultView          String   @default("week")
+  calendarWeekStartsOn         Int      @default(1)
+  calendarWorkingHoursStart    String   @default("09:00")
+  calendarWorkingHoursEnd      String   @default("18:00")
+  calendarShowWeekends         Boolean  @default(true)
+  productivityDailyGoal        Int      @default(5)
+  productivityPomodoroEnabled  Boolean  @default(false)
+  productivityPomodoroDuration Int      @default(25)
+  productivityBreakDuration    Int      @default(5)
+  createdAt                    DateTime @default(now())
+  updatedAt                    DateTime
+  users                        users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model users {
+  id               String            @id
+  email            String            @unique
+  password         String
+  name             String
+  avatar           String?
+  role             UserRole          @default(USER)
+  timezone         String            @default("America/Sao_Paulo")
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime
+  events           events[]
+  reminders        reminders[]
+  task_categories  task_categories[]
+  tasks            tasks[]
+  user_preferences user_preferences?
+}
+
+enum EventRecurrence {
+  NONE
+  DAILY
+  WEEKLY
+  MONTHLY
+  YEARLY
+}
+
+enum EventType {
+  MEETING
+  APPOINTMENT
+  REMINDER
+  DEADLINE
+  PERSONAL
+  WORK
+}
+
+enum ReminderStatus {
+  PENDING
+  SENT
+  DISMISSED
+  SNOOZED
+}
+
+enum ReminderType {
+  TASK
+  EVENT
+  CUSTOM
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}

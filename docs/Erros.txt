@@ -1,0 +1,82 @@
+Recoverable Error
+
+
+Hydration failed because the server rendered HTML didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+See more info here: https://nextjs.org/docs/messages/react-hydration-error
+
+
+  ...
+    <ScrollAndFocusHandler segmentPath={[...]}>
+      <InnerScrollAndFocusHandler segmentPath={[...]} focusAndScrollRef={{apply:false, ...}}>
+        <ErrorBoundary errorComponent={undefined} errorStyles={undefined} errorScripts={undefined}>
+          <LoadingBoundary name="/" loading={null}>
+            <HTTPAccessFallbackBoundary notFound={<SegmentViewNode>} forbidden={undefined} unauthorized={undefined}>
+              <HTTPAccessFallbackErrorBoundary pathname="/tasks" notFound={<SegmentViewNode>} forbidden={undefined} ...>
+                <RedirectBoundary>
+                  <RedirectErrorBoundary router={{...}}>
+                    <InnerLayoutRouter url="/tasks" tree={[...]} params={{}} cacheNode={{...}} segmentPath={[...]} ...>
+                      <SegmentViewNode type="layout" pagePath="/apps/web/...">
+                        <SegmentTrieNode>
+                        <script>
+                        <script>
+                        <script>
+                        <ClientSegmentRoot Component={function TasksLayout} slots={{...}} ...>
+                          <TasksLayout params={Promise}>
++                           <div className="flex h-screen overflow-hidden">
+-                           <section
+-                             aria-label="Notifications alt+T"
+-                             tabindex="-1"
+-                             aria-live="polite"
+-                             aria-relevant="additions text"
+-                             aria-atomic="false"
+-                           >
+                    ...
+        ...
+src/app/tasks/layout.tsx (24:5) @ TasksLayout
+
+
+  22 |
+  23 |   return (
+> 24 |     <div className="flex h-screen overflow-hidden">
+     |     ^
+  25 |       <Sidebar />
+  26 |       <main className="flex-1 overflow-y-auto bg-gray-50">
+  27 |         <div className="p-8">{children}</div>
+Call Stack
+13
+
+Hide 11 ignore-listed frame(s)
+<unknown>
+https://react.dev/link/hydration-mismatch
+throwOnHydrationMismatch
+../../node_modules/.pnpm/next@16.1.0_@babel+core@7.28.5_react-dom@19.2.3_react@19.2.3__react@19.2.3/node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js (5530:11)
+beginWork
+../../node_modules/.pnpm/next@16.1.0_@babel+core@7.28.5_react-dom@19.2.3_react@19.2.3__react@19.2.3/node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js (12385:17)
+runWithFiberInDEV
+../../node_modules/.pnpm/next@16.1.0_@babel+core@7.28.5_react-dom@19.2.3_react@19.2.3__react@19.2.3/node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js (986:30)
+performUnitOfWork
+../../node_modules/.pnpm/next@16.1.0_@babel+core@7.28.5_react-dom@19.2.3_react@19.2.3__react@19.2.3/node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js (18997:22)
+workLoopConcurrentByScheduler
+../../node_modules/.pnpm/next@16.1.0_@babel+core@7.28.5_react-dom@19.2.3_react@19.2.3__react@19.2.3/node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js (18991:9)
+renderRootConcurrent
+../../node_modules/.pnpm/next@16.1.0_@babel+core@7.28.5_react-dom@19.2.3_react@19.2.3__react@19.2.3/node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js (18973:15)
+performWorkOnRoot
+../../node_modules/.pnpm/next@16.1.0_@babel+core@7.28.5_react-dom@19.2.3_react@19.2.3__react@19.2.3/node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js (17834:11)
+performWorkOnRootViaSchedulerTask
+../../node_modules/.pnpm/next@16.1.0_@babel+core@7.28.5_react-dom@19.2.3_react@19.2.3__react@19.2.3/node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js (20384:7)
+MessagePort.performWorkUntilDeadline
+../../node_modules/.pnpm/next@16.1.0_@babel+core@7.28.5_react-dom@19.2.3_react@19.2.3__react@19.2.3/node_modules/next/dist/compiled/scheduler/cjs/scheduler.development.js (45:48)
+div
+<anonymous>
+TasksLayout
+src/app/tasks/layout.tsx (24:5)
+ClientSegmentRoot
+../../node_modules/.pnpm/next@16.1.0_@babel+core@7.28.5_react-dom@19.2.3_react@19.2.3__react@19.2.3/node_modules/next/src/client/components/client-segment.tsx (63:12)
