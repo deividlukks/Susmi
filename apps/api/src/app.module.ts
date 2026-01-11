@@ -11,6 +11,9 @@ import { EventsModule } from './events/events.module';
 import { RemindersModule } from './reminders/reminders.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { BotModule } from './bot/bot.module';
+import { HabitsModule } from './habits/habits.module';
+import { ProjectsModule } from './projects/projects.module';
+import { CalendarModule } from './calendar/calendar.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
 
@@ -30,6 +33,9 @@ import { RolesGuard } from './common/guards/roles.guard';
     RemindersModule,
     AnalyticsModule,
     BotModule,
+    HabitsModule,
+    ProjectsModule,
+    CalendarModule,
   ],
   providers: [
     {

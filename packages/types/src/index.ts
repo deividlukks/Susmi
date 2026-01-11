@@ -13,6 +13,15 @@ export * from './analytics.types';
 // User types
 export * from './user.types';
 
+// Habit types
+export * from './habit.types';
+
+// Project types
+export * from './project.types';
+
+// Calendar types
+export * from './calendar.types';
+
 // Common types
 export interface ApiResponse<T = any> {
   success: boolean;

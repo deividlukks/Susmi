@@ -66,8 +66,8 @@ describe('RemindersService', () => {
       description: 'Description',
       type: ReminderType.CUSTOM,
       triggerAt: new Date('2026-12-25T09:00:00Z'),
-      taskId: null,
-      eventId: null,
+      taskId: undefined,
+      eventId: undefined,
     };
 
     it('should create reminder with all fields', async () => {
@@ -94,6 +94,7 @@ describe('RemindersService', () => {
         ...createReminderDto,
         type: ReminderType.TASK,
         taskId: 'task-123',
+        eventId: undefined,
       };
       mockPrismaService.reminders.create.mockResolvedValue(mockReminder);
 
@@ -114,6 +115,7 @@ describe('RemindersService', () => {
         ...createReminderDto,
         type: ReminderType.EVENT,
         eventId: 'event-123',
+        taskId: undefined,
       };
       mockPrismaService.reminders.create.mockResolvedValue(mockReminder);
 
@@ -135,8 +137,8 @@ describe('RemindersService', () => {
       await service.create(userId, createReminderDto);
 
       const createCall = (prismaService.reminders.create as jest.Mock).mock.calls[0][0];
-      expect(createCall.data.taskId).toBeNull();
-      expect(createCall.data.eventId).toBeNull();
+      expect(createCall.data.taskId).toBeUndefined();
+      expect(createCall.data.eventId).toBeUndefined();
     });
   });
 

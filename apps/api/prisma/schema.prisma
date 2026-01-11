@@ -40,6 +40,132 @@ model events {
   reminders         reminders[]
 }
 
+model habit_check_ins {
+  id        String   @id
+  habitId   String
+  userId    String
+  date      DateTime @db.Date
+  count     Int      @default(1)
+  note      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  habits    habits   @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  users     users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([habitId, userId, date])
+  @@index([habitId, date])
+  @@index([userId, date])
+}
+
+model habits {
+  id              String            @id
+  userId          String
+  title           String
+  description     String?
+  icon            String?
+  color           String            @default("#3b82f6")
+  frequency       HabitFrequency    @default(DAILY)
+  targetCount     Int?
+  targetUnit      String?
+  reminderTime    String?
+  isActive        Boolean           @default(true)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime
+  habit_check_ins habit_check_ins[]
+  users           users             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isActive])
+}
+
+model milestones {
+  id          String          @id
+  projectId   String
+  title       String
+  description String?
+  status      MilestoneStatus @default(PENDING)
+  dueDate     DateTime?
+  completedAt DateTime?
+  position    Int
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime
+  projects    projects        @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+}
+
+model project_cards {
+  id              String          @id
+  columnId        String
+  projectId       String
+  title           String
+  description     String?
+  position        Int
+  priority        TaskPriority    @default(MEDIUM)
+  assigneeId      String?
+  dueDate         DateTime?
+  tags            String[]
+  estimatedHours  Float?
+  actualHours     Float?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime
+  users           users?          @relation(fields: [assigneeId], references: [id])
+  project_columns project_columns @relation(fields: [columnId], references: [id], onDelete: Cascade)
+
+  @@index([assigneeId])
+  @@index([columnId, position])
+  @@index([projectId])
+}
+
+model project_columns {
+  id            String          @id
+  projectId     String
+  title         String
+  position      Int
+  color         String?
+  limit         Int?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime
+  project_cards project_cards[]
+  projects      projects        @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, position])
+  @@index([projectId])
+}
+
+model project_members {
+  id        String            @id
+  projectId String
+  userId    String
+  role      ProjectMemberRole @default(MEMBER)
+  addedAt   DateTime          @default(now())
+  projects  projects          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  users     users             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, userId])
+  @@index([projectId])
+  @@index([userId])
+}
+
+model projects {
+  id              String            @id
+  userId          String
+  title           String
+  description     String?
+  status          ProjectStatus     @default(ACTIVE)
+  color           String            @default("#6366f1")
+  startDate       DateTime?
+  endDate         DateTime?
+  isArchived      Boolean           @default(false)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime
+  milestones      milestones[]
+  project_columns project_columns[]
+  project_members project_members[]
+  users           users             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isArchived])
+}
+
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model reminders {
   id               String         @id
@@ -132,6 +258,11 @@ model users {
   createdAt        DateTime          @default(now())
   updatedAt        DateTime
   events           events[]
+  habit_check_ins  habit_check_ins[]
+  habits           habits[]
+  project_cards    project_cards[]
+  project_members  project_members[]
+  projects         projects[]
   reminders        reminders[]
   task_categories  task_categories[]
   tasks            tasks[]
@@ -153,6 +284,35 @@ enum EventType {
   DEADLINE
   PERSONAL
   WORK
+}
+
+enum HabitFrequency {
+  DAILY
+  WEEKLY
+  MONTHLY
+  CUSTOM
+}
+
+enum MilestoneStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum ProjectMemberRole {
+  OWNER
+  ADMIN
+  MEMBER
+  VIEWER
+}
+
+enum ProjectStatus {
+  PLANNING
+  ACTIVE
+  ON_HOLD
+  COMPLETED
+  ARCHIVED
 }
 
 enum ReminderStatus {
