@@ -1,0 +1,8 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "installCommand": "pnpm install",
+  "buildCommand": "npx turbo run build --filter=@susmi/web-app",
+  "outputDirectory": "apps/web-app/.next",
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD ./apps/web-app ./packages"
+}

@@ -1,0 +1,1027 @@
+Assistente Inteligente Pessoal - Guia de Desenvolvimento
+1. Visão Geral do Projeto
+Objetivo
+Criar um assistente inteligente centralizado capaz de automatizar e gerenciar atividades pessoais através de comandos de voz e texto, integrando diferentes serviços e dispositivos.
+Inspiração JARVIS
+
+Interface conversacional natural
+Automação proativa de tarefas
+Integração com múltiplos sistemas
+Aprendizado sobre preferências do usuário
+Acesso multiplataforma
+
+
+2. Arquitetura do Sistema
+2.1 Camada de Interface
+
+Interface de Voz
+
+Reconhecimento de fala (Speech-to-Text)
+Síntese de voz (Text-to-Speech)
+Wake word detection ("Hey Jarvis")
+Processamento de áudio em tempo real
+
+
+Interface Visual
+
+Aplicativo mobile (iOS/Android)
+Aplicativo desktop (Windows/Mac/Linux)
+Interface web
+Dashboard de controle
+
+
+
+2.2 Camada de Inteligência
+
+Motor de IA
+
+LLM para compreensão de linguagem natural
+Sistema de intenções e entidades
+Gerenciamento de contexto conversacional
+Memória de conversas anteriores
+
+
+Motor de Decisão
+
+Sistema de regras e automações
+Priorização de tarefas
+Sugestões proativas
+Aprendizado de padrões
+
+
+
+2.3 Camada de Integração
+
+Conectores de Serviços
+
+Email (Gmail, Outlook)
+Calendário (Google Calendar, Outlook)
+Tarefas (Todoist, Notion, Trello)
+Mensagens (WhatsApp, Telegram, Slack)
+Arquivos (Google Drive, Dropbox, OneDrive)
+Finanças (bancos, apps de pagamento)
+Casa inteligente (Alexa, Google Home, dispositivos IoT)
+
+
+
+2.4 Camada de Dados
+
+Banco de Dados
+
+Perfil do usuário
+Histórico de conversas
+Preferências e configurações
+Logs de ações realizadas
+Cache de informações frequentes
+
+
+
+
+3. Funcionalidades Principais
+3.1 Gestão de Comunicação
+
+Ler e resumir emails importantes
+Responder emails com templates ou IA
+Agendar e gerenciar reuniões
+Enviar mensagens agendadas
+Filtrar notificações por prioridade
+
+3.2 Gestão de Tempo
+
+Gerenciar calendário automaticamente
+Sugerir horários para atividades
+Lembrar compromissos e prazos
+Otimizar rotas e deslocamentos
+Bloquear tempo para foco
+
+3.3 Gestão de Tarefas
+
+Criar e organizar tarefas
+Priorizar automaticamente
+Quebrar projetos em subtarefas
+Acompanhar progresso
+Integrar com metodologias (GTD, Pomodoro)
+
+3.4 Gestão de Informação
+
+Pesquisar informações online
+Salvar e organizar documentos
+Criar resumos de artigos/PDFs
+Extrair dados de documentos
+Manter base de conhecimento pessoal
+
+3.5 Gestão Financeira
+
+Rastrear gastos e receitas
+Categorizar transações
+Gerar relatórios financeiros
+Alertas de vencimentos
+Sugestões de economia
+
+3.6 Automação Residencial
+
+Controlar dispositivos IoT
+Criar rotinas automatizadas
+Ajustar iluminação e temperatura
+Gerenciar segurança doméstica
+Controlar entretenimento
+
+3.7 Saúde e Bem-estar
+
+Lembretes de medicamentos
+Acompanhar exercícios
+Sugerir pausas e descanso
+Monitorar sono
+Integrar com wearables
+
+
+4. Stack Tecnológica Recomendada
+4.1 Backend
+
+Linguagem: Python ou Node.js
+Framework: FastAPI, Express, ou NestJS
+Banco de Dados: PostgreSQL (relacional) + Redis (cache)
+Vector Database: Pinecone ou Weaviate (para memória semântica)
+
+4.2 IA e NLP
+
+LLM: OpenAI GPT-4, Anthropic Claude, ou LLMs open-source (Llama)
+Speech-to-Text: Whisper (OpenAI), Google Speech API
+Text-to-Speech: ElevenLabs, Google TTS, Azure TTS
+Wake Word: Porcupine, Snowboy
+
+4.3 Frontend
+
+Web: React/Next.js ou Vue/Nuxt
+Mobile: React Native ou Flutter
+Desktop: Electron ou Tauri
+
+4.4 Infraestrutura
+
+Cloud: AWS, Google Cloud, ou Azure
+Containers: Docker + Kubernetes
+Message Queue: RabbitMQ ou Apache Kafka
+API Gateway: Kong ou AWS API Gateway
+
+
+5. Roadmap de Desenvolvimento
+Fase 1: MVP (2-3 meses)
+
+Interface básica de chat (texto)
+Integração com 2-3 serviços essenciais (email, calendário)
+Comandos básicos de automação
+Processamento de linguagem natural básico
+
+Fase 2: Expansão (2-3 meses)
+
+Interface de voz
+5-7 integrações adicionais
+Sistema de lembretes e notificações
+Aplicativo mobile
+
+Fase 3: Inteligência (2-3 meses)
+
+Aprendizado de padrões
+Sugestões proativas
+Automações complexas
+Memória de longo prazo
+
+Fase 4: Avançado (3-4 meses)
+
+Integração com casa inteligente
+Análise preditiva
+Interface multi-modal
+Sistema de plugins extensível
+
+
+6. Considerações Importantes
+6.1 Segurança
+
+Autenticação robusta (OAuth 2.0, MFA)
+Criptografia de dados em repouso e trânsito
+Gestão segura de credenciais de APIs
+Auditoria de acessos
+Conformidade com LGPD/GDPR
+
+6.2 Privacidade
+
+Processamento local quando possível
+Controle granular de permissões
+Transparência sobre uso de dados
+Opção de self-hosting
+Política clara de retenção de dados
+
+6.3 Escalabilidade
+
+Arquitetura de microsserviços
+Load balancing
+Cache inteligente
+Processamento assíncrono
+Monitoramento de performance
+
+6.4 Custos
+
+APIs de IA (principal custo variável)
+Infraestrutura cloud
+Serviços de terceiros
+Manutenção e desenvolvimento contínuo
+
+
+7. Primeiros Passos Práticos
+Semana 1-2: Planejamento
+
+Definir casos de uso prioritários
+Mapear integrações necessárias
+Escolher stack tecnológica
+Criar arquitetura detalhada
+Configurar ambiente de desenvolvimento
+
+Semana 3-4: Prototipagem
+
+Implementar chatbot básico
+Integrar com uma LLM
+Criar 1-2 integrações simples
+Testar fluxos básicos
+Validar conceito
+
+Semana 5-8: MVP
+
+Desenvolver interface principal
+Implementar integrações core
+Criar sistema de comandos
+Adicionar persistência de dados
+Realizar testes iniciais
+
+
+8. Recursos e Aprendizado
+Documentações Essenciais
+
+Documentação da API do LLM escolhido
+Docs das APIs dos serviços a integrar
+Guias de arquitetura de microsserviços
+Tutoriais de NLP e processamento de voz
+
+Comunidades
+
+Discord/Slack de desenvolvedores de IA
+GitHub (repositórios similares)
+Stack Overflow
+Reddit (r/artificial, r/programming)
+
+Projetos de Referência
+
+Assistentes open-source (Mycroft, Leon)
+Frameworks de automação (Home Assistant, n8n)
+Chatbots empresariais
+
+
+9. Alternativas e Atalhos
+Usar Plataformas Existentes
+
+Zapier/Make: Para automações sem código
+Home Assistant: Para automação residencial
+Notion API: Como hub central
+n8n: Workflow automation open-source
+
+Frameworks e Ferramentas
+
+LangChain: Para orquestração de LLMs
+Rasa: Framework open-source para assistentes
+Botpress: Plataforma de chatbots
+Voiceflow: Design conversacional visual
+
+
+10. Métricas de Sucesso
+
+Número de tarefas automatizadas por dia
+Tempo economizado em atividades manuais
+Taxa de acurácia do reconhecimento de intenções
+Satisfação do usuário (você mesmo!)
+Uptime do sistema
+Tempo de resposta médio
+
+-
+
+Estrutura do Projeto e Stack Tecnológica
+1. Estrutura de Diretórios
+
+jarvis-assistant/
+│
+├── backend/
+│   ├── api/
+│   │   ├── v1/
+│   │   │   ├── endpoints/
+│   │   │   │   ├── chat.py
+│   │   │   │   ├── automation.py
+│   │   │   │   ├── integrations.py
+│   │   │   │   ├── voice.py
+│   │   │   │   └── user.py
+│   │   │   ├── dependencies.py
+│   │   │   └── router.py
+│   │   └── middleware/
+│   │       ├── auth.py
+│   │       ├── logging.py
+│   │       └── rate_limit.py
+│   │
+│   ├── core/
+│   │   ├── config.py
+│   │   ├── security.py
+│   │   ├── database.py
+│   │   └── redis.py
+│   │
+│   ├── services/
+│   │   ├── ai/
+│   │   │   ├── llm_service.py
+│   │   │   ├── intent_classifier.py
+│   │   │   ├── context_manager.py
+│   │   │   └── memory_service.py
+│   │   │
+│   │   ├── voice/
+│   │   │   ├── stt_service.py
+│   │   │   ├── tts_service.py
+│   │   │   └── wake_word.py
+│   │   │
+│   │   ├── integrations/
+│   │   │   ├── base_integration.py
+│   │   │   ├── gmail_service.py
+│   │   │   ├── calendar_service.py
+│   │   │   ├── todoist_service.py
+│   │   │   ├── whatsapp_service.py
+│   │   │   ├── drive_service.py
+│   │   │   └── notion_service.py
+│   │   │
+│   │   ├── automation/
+│   │   │   ├── automation_engine.py
+│   │   │   ├── scheduler.py
+│   │   │   ├── rule_processor.py
+│   │   │   └── workflow_manager.py
+│   │   │
+│   │   └── notification/
+│   │       ├── notification_service.py
+│   │       ├── push_service.py
+│   │       └── email_notifier.py
+│   │
+│   ├── models/
+│   │   ├── database/
+│   │   │   ├── user.py
+│   │   │   ├── conversation.py
+│   │   │   ├── task.py
+│   │   │   ├── automation.py
+│   │   │   └── integration.py
+│   │   │
+│   │   └── schemas/
+│   │       ├── chat_schema.py
+│   │       ├── user_schema.py
+│   │       ├── task_schema.py
+│   │       └── automation_schema.py
+│   │
+│   ├── utils/
+│   │   ├── logger.py
+│   │   ├── validators.py
+│   │   ├── helpers.py
+│   │   └── constants.py
+│   │
+│   ├── workers/
+│   │   ├── celery_app.py
+│   │   ├── tasks/
+│   │   │   ├── email_tasks.py
+│   │   │   ├── automation_tasks.py
+│   │   │   └── sync_tasks.py
+│   │   └── schedules.py
+│   │
+│   ├── tests/
+│   │   ├── unit/
+│   │   ├── integration/
+│   │   └── e2e/
+│   │
+│   ├── alembic/
+│   │   ├── versions/
+│   │   └── env.py
+│   │
+│   ├── main.py
+│   ├── requirements.txt
+│   ├── Dockerfile
+│   └── .env.example
+│
+├── frontend/
+│   ├── web/
+│   │   ├── public/
+│   │   ├── src/
+│   │   │   ├── components/
+│   │   │   │   ├── chat/
+│   │   │   │   │   ├── ChatWindow.tsx
+│   │   │   │   │   ├── MessageBubble.tsx
+│   │   │   │   │   ├── InputArea.tsx
+│   │   │   │   │   └── VoiceButton.tsx
+│   │   │   │   │
+│   │   │   │   ├── dashboard/
+│   │   │   │   │   ├── Overview.tsx
+│   │   │   │   │   ├── TaskList.tsx
+│   │   │   │   │   ├── Calendar.tsx
+│   │   │   │   │   └── Stats.tsx
+│   │   │   │   │
+│   │   │   │   ├── automations/
+│   │   │   │   │   ├── AutomationList.tsx
+│   │   │   │   │   ├── AutomationBuilder.tsx
+│   │   │   │   │   └── TriggerConfig.tsx
+│   │   │   │   │
+│   │   │   │   ├── integrations/
+│   │   │   │   │   ├── IntegrationCard.tsx
+│   │   │   │   │   ├── ConnectionFlow.tsx
+│   │   │   │   │   └── SettingsPanel.tsx
+│   │   │   │   │
+│   │   │   │   ├── layout/
+│   │   │   │   │   ├── Sidebar.tsx
+│   │   │   │   │   ├── Header.tsx
+│   │   │   │   │   └── Navigation.tsx
+│   │   │   │   │
+│   │   │   │   └── common/
+│   │   │   │       ├── Button.tsx
+│   │   │   │       ├── Input.tsx
+│   │   │   │       ├── Modal.tsx
+│   │   │   │       └── Loading.tsx
+│   │   │   │
+│   │   │   ├── pages/
+│   │   │   │   ├── Home.tsx
+│   │   │   │   ├── Chat.tsx
+│   │   │   │   ├── Automations.tsx
+│   │   │   │   ├── Integrations.tsx
+│   │   │   │   ├── Settings.tsx
+│   │   │   │   └── Login.tsx
+│   │   │   │
+│   │   │   ├── services/
+│   │   │   │   ├── api.ts
+│   │   │   │   ├── websocket.ts
+│   │   │   │   ├── auth.ts
+│   │   │   │   └── voice.ts
+│   │   │   │
+│   │   │   ├── hooks/
+│   │   │   │   ├── useChat.ts
+│   │   │   │   ├── useVoice.ts
+│   │   │   │   ├── useAutomations.ts
+│   │   │   │   └── useAuth.ts
+│   │   │   │
+│   │   │   ├── store/
+│   │   │   │   ├── slices/
+│   │   │   │   │   ├── chatSlice.ts
+│   │   │   │   │   ├── userSlice.ts
+│   │   │   │   │   └── uiSlice.ts
+│   │   │   │   └── store.ts
+│   │   │   │
+│   │   │   ├── utils/
+│   │   │   │   ├── formatters.ts
+│   │   │   │   ├── validators.ts
+│   │   │   │   └── constants.ts
+│   │   │   │
+│   │   │   ├── types/
+│   │   │   │   ├── chat.types.ts
+│   │   │   │   ├── user.types.ts
+│   │   │   │   └── automation.types.ts
+│   │   │   │
+│   │   │   ├── App.tsx
+│   │   │   ├── main.tsx
+│   │   │   └── index.css
+│   │   │
+│   │   ├── package.json
+│   │   ├── tsconfig.json
+│   │   ├── vite.config.ts
+│   │   └── Dockerfile
+│   │
+│   └── mobile/
+│       ├── src/
+│       │   ├── screens/
+│       │   ├── components/
+│       │   ├── navigation/
+│       │   ├── services/
+│       │   ├── hooks/
+│       │   └── utils/
+│       ├── android/
+│       ├── ios/
+│       ├── package.json
+│       └── app.json
+│
+├── ai-engine/
+│   ├── models/
+│   │   ├── intent_classifier/
+│   │   ├── entity_extractor/
+│   │   └── embeddings/
+│   │
+│   ├── training/
+│   │   ├── datasets/
+│   │   ├── scripts/
+│   │   └── configs/
+│   │
+│   ├── inference/
+│   │   ├── llm_handler.py
+│   │   ├── prompt_templates.py
+│   │   └── response_parser.py
+│   │
+│   └── requirements.txt
+│
+├── voice-service/
+│   ├── src/
+│   │   ├── stt/
+│   │   │   ├── whisper_handler.py
+│   │   │   └── audio_processor.py
+│   │   │
+│   │   ├── tts/
+│   │   │   ├── elevenlabs_handler.py
+│   │   │   └── voice_cache.py
+│   │   │
+│   │   ├── wake_word/
+│   │   │   ├── detector.py
+│   │   │   └── models/
+│   │   │
+│   │   └── server.py
+│   │
+│   ├── Dockerfile
+│   └── requirements.txt
+│
+├── automation-engine/
+│   ├── src/
+│   │   ├── engine/
+│   │   │   ├── workflow_executor.py
+│   │   │   ├── trigger_listener.py
+│   │   │   └── action_handler.py
+│   │   │
+│   │   ├── rules/
+│   │   │   ├── rule_parser.py
+│   │   │   └── condition_evaluator.py
+│   │   │
+│   │   └── integrations/
+│   │       └── connectors/
+│   │
+│   ├── Dockerfile
+│   └── requirements.txt
+│
+├── infrastructure/
+│   ├── docker/
+│   │   ├── docker-compose.yml
+│   │   ├── docker-compose.dev.yml
+│   │   └── docker-compose.prod.yml
+│   │
+│   ├── kubernetes/
+│   │   ├── deployments/
+│   │   │   ├── backend-deployment.yaml
+│   │   │   ├── frontend-deployment.yaml
+│   │   │   ├── ai-engine-deployment.yaml
+│   │   │   └── voice-service-deployment.yaml
+│   │   │
+│   │   ├── services/
+│   │   ├── ingress/
+│   │   ├── configmaps/
+│   │   └── secrets/
+│   │
+│   ├── terraform/
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   ├── outputs.tf
+│   │   ├── modules/
+│   │   │   ├── vpc/
+│   │   │   ├── eks/
+│   │   │   ├── rds/
+│   │   │   └── redis/
+│   │   └── environments/
+│   │       ├── dev/
+│   │       └── prod/
+│   │
+│   └── monitoring/
+│       ├── prometheus/
+│       ├── grafana/
+│       └── alerts/
+│
+├── scripts/
+│   ├── setup/
+│   │   ├── install_dependencies.sh
+│   │   ├── setup_database.sh
+│   │   └── generate_keys.sh
+│   │
+│   ├── deployment/
+│   │   ├── deploy.sh
+│   │   ├── rollback.sh
+│   │   └── health_check.sh
+│   │
+│   └── maintenance/
+│       ├── backup.sh
+│       ├── cleanup.sh
+│       └── migrations.sh
+│
+├── docs/
+│   ├── api/
+│   │   ├── endpoints.md
+│   │   └── websockets.md
+│   │
+│   ├── architecture/
+│   │   ├── overview.md
+│   │   ├── data_flow.md
+│   │   └── security.md
+│   │
+│   ├── integrations/
+│   │   ├── gmail.md
+│   │   ├── calendar.md
+│   │   └── custom_integration.md
+│   │
+│   └── deployment/
+│       ├── local.md
+│       ├── production.md
+│       └── scaling.md
+│
+├── .github/
+│   ├── workflows/
+│   │   ├── ci.yml
+│   │   ├── cd.yml
+│   │   └── tests.yml
+│   └── ISSUE_TEMPLATE/
+│
+├── .gitignore
+├── README.md
+├── LICENSE
+└── CONTRIBUTING.md
+
+
+2. Stack Tecnológica Detalhada
+2.1 Backend (API Principal)
+Linguagem e Framework
+
+Python 3.11+
+FastAPI - Framework web assíncrono de alta performance
+Pydantic - Validação de dados e schemas
+Uvicorn - Servidor ASGI
+
+Banco de Dados
+
+PostgreSQL 15+ - Banco relacional principal
+SQLAlchemy - ORM
+Alembic - Migrations
+Redis - Cache e sessões
+Pinecone ou Weaviate - Vector database para embeddings
+
+Processamento Assíncrono
+
+Celery - Task queue
+RabbitMQ ou Redis - Message broker
+Celery Beat - Scheduler
+
+Autenticação e Segurança
+
+JWT - Tokens de autenticação
+PassLib + Bcrypt - Hash de senhas
+OAuth 2.0 - Integrações com serviços externos
+Python-JOSE - JWT handling
+CORS Middleware - Segurança cross-origin
+
+Comunicação em Tempo Real
+
+WebSockets (FastAPI nativo)
+Socket.IO (alternativa)
+
+
+2.2 AI Engine
+LLM e NLP
+
+OpenAI GPT-4 ou Anthropic Claude - LLM principal
+LangChain - Orquestração de LLMs
+LlamaIndex - RAG (Retrieval Augmented Generation)
+Transformers (Hugging Face) - Modelos locais
+Sentence Transformers - Embeddings
+
+Intent e Entity Recognition
+
+spaCy - NLP pipeline
+NLTK - Processamento de texto
+Rasa NLU (opcional) - Intent classification
+
+Context e Memory
+
+LangChain Memory - Gerenciamento de contexto
+Vector Store - Memória semântica de longo prazo
+
+
+2.3 Voice Service
+Speech-to-Text
+
+OpenAI Whisper (self-hosted ou API)
+Google Cloud Speech-to-Text (alternativa)
+Assembly AI (alternativa)
+
+Text-to-Speech
+
+ElevenLabs API - Vozes naturais e clonagem
+Google Cloud TTS (alternativa)
+Azure TTS (alternativa)
+Coqui TTS - Open-source local
+
+Wake Word Detection
+
+Porcupine (Picovoice)
+Snowboy (descontinuado mas ainda útil)
+Mycroft Precise
+
+Processamento de Áudio
+
+PyAudio - Captura de áudio
+Librosa - Análise de áudio
+Soundfile - I/O de arquivos de áudio
+
+
+2.4 Frontend Web
+Framework e Build
+
+React 18+ com TypeScript
+Next.js 14+ (opcional, para SSR e melhor SEO)
+Vite - Build tool (se não usar Next.js)
+
+UI Framework
+
+Tailwind CSS - Estilização utility-first
+shadcn/ui - Componentes base
+Framer Motion - Animações
+Lucide React - Ícones
+
+Estado e Data Fetching
+
+Redux Toolkit - Gerenciamento de estado global
+RTK Query - Data fetching e cache
+Zustand (alternativa mais simples)
+React Query (alternativa para data fetching)
+
+Comunicação
+
+Axios - HTTP client
+Socket.IO Client - WebSockets
+SWR - Data fetching com cache
+
+Voice Integration
+
+RecordRTC - Gravação de áudio no browser
+Web Speech API - Fallback para STT/TTS
+
+Gráficos e Visualização
+
+Recharts - Gráficos React
+Chart.js - Alternativa
+React Calendar - Componente de calendário
+
+
+2.5 Frontend Mobile
+Framework
+
+React Native com TypeScript
+Expo (managed workflow para início rápido)
+
+Navegação
+
+React Navigation - Navegação entre telas
+
+UI Components
+
+React Native Paper - Material Design
+NativeBase - Alternativa
+Tamagui - Performance-first
+
+Estado
+
+Redux Toolkit - Consistência com web
+Redux Persist - Persistência local
+
+Native Features
+
+Expo Audio - Gravação e reprodução
+Expo Notifications - Push notifications
+Expo Secure Store - Armazenamento seguro
+React Native Voice - STT integration
+
+
+2.6 Integrações (Backend Services)
+Email
+
+Google Gmail API - Via google-auth-oauthlib
+Microsoft Graph API - Outlook
+IMAP/SMTP - Fallback universal
+
+Calendário
+
+Google Calendar API
+Microsoft Graph API
+CalDAV - Protocolo universal
+
+Tarefas e Produtividade
+
+Todoist API
+Notion API
+Trello API
+Asana API
+
+Mensagens
+
+Twilio API - WhatsApp Business
+Telegram Bot API
+Slack API
+Discord API
+
+Armazenamento
+
+Google Drive API
+Dropbox API
+OneDrive API (Microsoft Graph)
+
+Pagamentos e Finanças
+
+Plaid API - Integração bancária
+Stripe API - Pagamentos
+APIs bancárias brasileiras (Open Banking)
+
+Casa Inteligente
+
+Home Assistant API
+Tuya API
+Philips Hue API
+Google Home / Alexa - Via IFTTT ou custom skills
+
+
+2.7 Infrastructure & DevOps
+Containerização
+
+Docker - Containerização
+Docker Compose - Desenvolvimento local
+
+Orquestração
+
+Kubernetes - Orquestração em produção
+Helm - Package manager para K8s
+
+Cloud Provider (escolher um)
+
+AWS: EC2, ECS/EKS, RDS, ElastiCache, S3, Lambda
+Google Cloud: GCE, GKE, Cloud SQL, Memorystore
+Azure: VMs, AKS, Azure Database, Redis Cache
+
+IaC (Infrastructure as Code)
+
+Terraform - Provisionamento de infraestrutura
+Ansible (opcional) - Configuration management
+
+CI/CD
+
+GitHub Actions - CI/CD pipeline
+GitLab CI (alternativa)
+Jenkins (alternativa mais complexa)
+
+Monitoring & Logging
+
+Prometheus - Métricas
+Grafana - Visualização
+ELK Stack (Elasticsearch, Logstash, Kibana) - Logs
+Sentry - Error tracking
+DataDog (alternativa all-in-one paga)
+
+API Gateway
+
+Kong - API Gateway open-source
+Traefik - Reverse proxy moderno
+Nginx - Alternativa tradicional
+
+
+2.8 Segurança
+Secrets Management
+
+HashiCorp Vault - Gerenciamento de secrets
+AWS Secrets Manager (se usar AWS)
+Doppler (SaaS alternativa)
+
+SSL/TLS
+
+Let's Encrypt - Certificados gratuitos
+Cert-Manager - Automação no K8s
+
+WAF (Web Application Firewall)
+
+Cloudflare - CDN + WAF
+AWS WAF (se usar AWS)
+
+
+2.9 Testing
+Backend
+
+pytest - Framework de testes
+pytest-asyncio - Testes assíncronos
+pytest-cov - Cobertura de código
+Factory Boy - Test fixtures
+Faker - Dados fake para testes
+
+Frontend
+
+Jest - Test runner
+React Testing Library - Testes de componentes
+Cypress - E2E testing
+Playwright (alternativa E2E)
+
+API Testing
+
+Postman - Manual testing
+Newman - Automação de testes Postman
+httpx - Cliente HTTP para testes Python
+
+
+2.10 Desenvolvimento
+Code Quality
+
+Black - Formatador Python
+Flake8 / Ruff - Linter Python
+MyPy - Type checking Python
+ESLint - Linter JavaScript/TypeScript
+Prettier - Formatador JS/TS
+Pre-commit - Git hooks
+
+Documentation
+
+Swagger/OpenAPI - Documentação de API (automático no FastAPI)
+Docusaurus - Documentação geral
+MkDocs - Alternativa Python
+
+Version Control
+
+Git
+GitHub / GitLab / Bitbucket
+Git Flow - Estratégia de branching
+
+
+3. Justificativas das Escolhas
+Por que FastAPI?
+
+Performance superior (async/await nativo)
+Documentação automática (Swagger)
+Validação automática (Pydantic)
+Type hints nativos
+WebSocket support
+
+Por que React/TypeScript?
+
+Ecossistema maduro e grande comunidade
+Type safety reduz bugs
+Reusabilidade de componentes
+React Native permite compartilhar código com mobile
+
+Por que PostgreSQL?
+
+Robustez e confiabilidade
+JSONB para dados semi-estruturados
+Excelente suporte a full-text search
+Extensões poderosas (pgvector para embeddings)
+
+Por que Microserviços (separação de voice-service, ai-engine)?
+
+Escalabilidade independente
+Isolamento de falhas
+Flexibilidade tecnológica
+Facilita manutenção
+
+Por que Docker/Kubernetes?
+
+Consistência entre ambientes
+Facilita deploy
+Escalabilidade horizontal
+Portabilidade entre clouds
+
+
+4. Estimativa de Custos Mensais (MVP)
+Infraestrutura (AWS exemplo)
+
+EC2/ECS: $50-100
+RDS PostgreSQL: $50-80
+ElastiCache Redis: $20-40
+S3 Storage: $10-20
+Load Balancer: $20
+
+APIs de IA
+
+OpenAI GPT-4: $50-200 (depende do uso)
+ElevenLabs TTS: $22-99
+Whisper (self-hosted): $0
+
+Serviços Externos
+
+Twilio (WhatsApp): $0-50
+Email service: $0-10
+Monitoring: $0-50
+
+Total Estimado MVP: $200-600/mês
+
+5. Alternativas para Reduzir Custos
+Open-Source LLMs
+
+Llama 3, Mixtral (self-hosted)
+Ollama para deployment local
+Groq para inference rápida e barata
+
+Voice Processing Local
+
+Whisper local (CPU/GPU própria)
+Coqui TTS local
+Economiza $50-100/mês
+
+Serverless
+
+AWS Lambda / Google Cloud Functions
+Paga apenas pelo uso
+Bom para início com baixo tráfego

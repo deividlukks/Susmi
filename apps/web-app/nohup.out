@@ -1,0 +1,14 @@
+
+> @susmi/web@1.0.0 dev /home/ubuntu/susmi/apps/web
+> next dev
+
+⚠ Port 3000 is in use by an unknown process, using available port 3001 instead.
+▲ Next.js 16.1.0 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://169.254.0.21:3001
+
+✓ Starting...
+⨯ Unable to acquire lock at /home/ubuntu/susmi/apps/web/.next/dev/lock, is another instance of next dev running?
+  Suggestion: If you intended to restart next dev, terminate the other process, and then try again.
+[?25h
+ ELIFECYCLE  Command failed with exit code 1.

@@ -1,0 +1,359 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  directUrl  = env("DIRECT_URL")
+  extensions = [uuid_ossp(map: "uuid-ossp", schema: "extensions")]
+}
+
+model agent_logs {
+  id        String   @id
+  agentName String
+  action    String
+  result    String
+  details   String
+  userId    String
+  metadata  Json?
+  timestamp DateTime @default(now())
+  users     users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([agentName, timestamp])
+  @@index([userId, timestamp])
+}
+
+model event_reminders {
+  id            String   @id
+  eventId       String
+  minutesBefore Int
+  notified      Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  events        events   @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+model events {
+  id                String            @id
+  title             String
+  description       String?
+  type              EventType         @default(PERSONAL)
+  startDate         DateTime
+  endDate           DateTime
+  location          String?
+  isAllDay          Boolean           @default(false)
+  recurrence        EventRecurrence   @default(NONE)
+  recurrenceEndDate DateTime?
+  color             String?
+  userId            String
+  attendees         String[]
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime
+  event_reminders   event_reminders[]
+  users             users             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reminders         reminders[]
+}
+
+model habit_check_ins {
+  id        String   @id
+  habitId   String
+  userId    String
+  date      DateTime @db.Date
+  count     Int      @default(1)
+  note      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  habits    habits   @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  users     users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([habitId, userId, date])
+  @@index([habitId, date])
+  @@index([userId, date])
+}
+
+model habits {
+  id              String            @id
+  userId          String
+  title           String
+  description     String?
+  icon            String?
+  color           String            @default("#3b82f6")
+  frequency       HabitFrequency    @default(DAILY)
+  targetCount     Int?
+  targetUnit      String?
+  reminderTime    String?
+  isActive        Boolean           @default(true)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime
+  habit_check_ins habit_check_ins[]
+  users           users             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isActive])
+}
+
+model milestones {
+  id          String          @id
+  projectId   String
+  title       String
+  description String?
+  status      MilestoneStatus @default(PENDING)
+  dueDate     DateTime?
+  completedAt DateTime?
+  position    Int
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime
+  projects    projects        @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+}
+
+model project_cards {
+  id              String          @id
+  columnId        String
+  projectId       String
+  title           String
+  description     String?
+  position        Int
+  priority        TaskPriority    @default(MEDIUM)
+  assigneeId      String?
+  dueDate         DateTime?
+  tags            String[]
+  estimatedHours  Float?
+  actualHours     Float?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime
+  users           users?          @relation(fields: [assigneeId], references: [id])
+  project_columns project_columns @relation(fields: [columnId], references: [id], onDelete: Cascade)
+
+  @@index([assigneeId])
+  @@index([columnId, position])
+  @@index([projectId])
+}
+
+model project_columns {
+  id            String          @id
+  projectId     String
+  title         String
+  position      Int
+  color         String?
+  limit         Int?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime
+  project_cards project_cards[]
+  projects      projects        @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, position])
+  @@index([projectId])
+}
+
+model project_members {
+  id        String            @id
+  projectId String
+  userId    String
+  role      ProjectMemberRole @default(MEMBER)
+  addedAt   DateTime          @default(now())
+  projects  projects          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  users     users             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, userId])
+  @@index([projectId])
+  @@index([userId])
+}
+
+model projects {
+  id              String            @id
+  userId          String
+  title           String
+  description     String?
+  status          ProjectStatus     @default(ACTIVE)
+  color           String            @default("#6366f1")
+  startDate       DateTime?
+  endDate         DateTime?
+  isArchived      Boolean           @default(false)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime
+  milestones      milestones[]
+  project_columns project_columns[]
+  project_members project_members[]
+  users           users             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isArchived])
+}
+
+model reminders {
+  id               String         @id
+  title            String
+  description      String?
+  type             ReminderType
+  status           ReminderStatus @default(PENDING)
+  triggerAt        DateTime
+  snoozedUntil     DateTime?
+  taskId           String?
+  eventId          String?
+  userId           String
+  notificationSent Boolean        @default(false)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime
+  events           events?        @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  tasks            tasks?         @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  users            users          @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model task_categories {
+  id        String   @id
+  name      String
+  color     String
+  icon      String?
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  users     users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tasks     tasks[]
+}
+
+model tasks {
+  id              String           @id
+  title           String
+  description     String?
+  status          TaskStatus       @default(TODO)
+  priority        TaskPriority     @default(MEDIUM)
+  categoryId      String?
+  dueDate         DateTime?
+  completedAt     DateTime?
+  userId          String
+  tags            String[]
+  estimatedTime   Int?
+  actualTime      Int?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime
+  reminders       reminders[]
+  task_categories task_categories? @relation(fields: [categoryId], references: [id])
+  users           users            @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model user_preferences {
+  id                           String   @id
+  userId                       String   @unique
+  theme                        String   @default("auto")
+  language                     String   @default("pt-BR")
+  notificationEmail            Boolean  @default(true)
+  notificationPush             Boolean  @default(true)
+  notificationTaskReminders    Boolean  @default(true)
+  notificationEventReminders   Boolean  @default(true)
+  notificationWeeklyReport     Boolean  @default(true)
+  notificationMonthlyReport    Boolean  @default(true)
+  calendarDefaultView          String   @default("week")
+  calendarWeekStartsOn         Int      @default(1)
+  calendarWorkingHoursStart    String   @default("09:00")
+  calendarWorkingHoursEnd      String   @default("18:00")
+  calendarShowWeekends         Boolean  @default(true)
+  productivityDailyGoal        Int      @default(5)
+  productivityPomodoroEnabled  Boolean  @default(false)
+  productivityPomodoroDuration Int      @default(25)
+  productivityBreakDuration    Int      @default(5)
+  createdAt                    DateTime @default(now())
+  updatedAt                    DateTime
+  users                        users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model users {
+  id               String            @id
+  email            String            @unique
+  password         String
+  name             String
+  avatar           String?
+  role             UserRole          @default(USER)
+  timezone         String            @default("America/Sao_Paulo")
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime
+  agent_logs       agent_logs[]
+  events           events[]
+  habit_check_ins  habit_check_ins[]
+  habits           habits[]
+  project_cards    project_cards[]
+  project_members  project_members[]
+  projects         projects[]
+  reminders        reminders[]
+  task_categories  task_categories[]
+  tasks            tasks[]
+  user_preferences user_preferences?
+}
+
+enum EventRecurrence {
+  NONE
+  DAILY
+  WEEKLY
+  MONTHLY
+  YEARLY
+}
+
+enum EventType {
+  MEETING
+  APPOINTMENT
+  REMINDER
+  DEADLINE
+  PERSONAL
+  WORK
+}
+
+enum HabitFrequency {
+  DAILY
+  WEEKLY
+  MONTHLY
+  CUSTOM
+}
+
+enum MilestoneStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum ProjectMemberRole {
+  OWNER
+  ADMIN
+  MEMBER
+  VIEWER
+}
+
+enum ProjectStatus {
+  PLANNING
+  ACTIVE
+  ON_HOLD
+  COMPLETED
+  ARCHIVED
+}
+
+enum ReminderStatus {
+  PENDING
+  SENT
+  DISMISSED
+  SNOOZED
+}
+
+enum ReminderType {
+  TASK
+  EVENT
+  CUSTOM
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}

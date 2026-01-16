@@ -1,0 +1,11 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "installCommand": "pnpm install",
+  "buildCommand": "cd ../.. && npx turbo run build --filter=@susmi/web-app",
+  "outputDirectory": ".next",
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD . ../../packages",
+  "env": {
+    "NEXT_PUBLIC_AUTH_PROVIDER": "supabase"
+  }
+}

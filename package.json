@@ -1,0 +1,39 @@
+{
+  "name": "susmi",
+  "version": "1.0.0",
+  "private": true,
+  "description": "S.U.S.M.I - Simplesmente Um Sistema Muito Inteligente",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "clean": "turbo run clean && rm -rf node_modules",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "typecheck": "turbo run typecheck",
+    "db:push": "cd apps/api && pnpm prisma db push",
+    "db:pull": "cd apps/api && pnpm prisma db pull",
+    "db:migrate": "cd apps/api && pnpm prisma migrate deploy",
+    "db:migrate:dev": "cd apps/api && pnpm prisma migrate dev",
+    "db:generate": "cd apps/api && pnpm prisma generate",
+    "db:studio": "cd apps/api && pnpm prisma studio",
+    "db:reset": "cd apps/api && pnpm prisma migrate reset",
+    "test:connection": "node scripts/test-connection.js",
+    "start:local": "node scripts/test-connection.js && pnpm dev",
+    "create:admin": "node scripts/create-admin.js"
+  },
+  "devDependencies": {
+    "prettier": "^3.2.5",
+    "turbo": "^2.3.0",
+    "typescript": "^5.7.2"
+  },
+  "packageManager": "pnpm@10.28.0",
+  "engines": {
+    "node": ">=22.0.0",
+    "pnpm": ">=9.0.0"
+  }
+}

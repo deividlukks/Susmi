@@ -1,0 +1,313 @@
+Projeto SUSMI (System for Unified Smart Management & Intelligence)
+
+Documento Mestre de Planejamento e Arquitetura
+Versão: 1.3 (Monorepo com Shared Packages)
+Status: Fase 1 - Fundação e Automação Estrutural
+
+1. Manifesto e Filosofia do Projeto
+
+O objetivo deste projeto transcende a criação de um simples chatbot ou assistente virtual convencional. A meta é arquitetar um Sistema Operacional de Vida (LifeOS) centralizado e onipresente. Para atingir o nível de sofisticação funcional de um sistema estilo "J.A.R.V.I.S.", rejeitamos a magia negra em favor de uma abordagem de engenharia disciplinada e pragmática:
+
+Obediência antes de Inteligência (Determinismo vs. Probabilidade):
+
+Princípio: O sistema deve, antes de tudo, ser uma ferramenta de execução precisa. Se o usuário diz "Apagar a luz", não há margem para interpretação criativa ou alucinação da IA.
+
+Aplicação: A camada base do sistema é puramente lógica (scripts, APIs, comandos diretos). A "inteligência" só é invocada quando a ambiguidade é detectada ou quando a tarefa exige síntese e criatividade.
+
+Automação Híbrida (A Fusão Cérebro-Músculo):
+
+O Músculo (Hard Code): Utilizamos código rígido (Python/Bash) para tarefas críticas, repetitivas e de alta velocidade (ex: backups, transações financeiras, controle IoT). Isso garante 100% de confiabilidade.
+
+O Cérebro (Soft AI): Utilizamos LLMs (Large Language Models) para tarefas analíticas, interpretativas e criativas (ex: resumir e-mails, planejar itinerários, escrever rascunhos). A IA atua como o orquestrador das ferramentas rígidas, não como a ferramenta em si.
+
+Memória é Identidade (Persistência Contextual):
+
+O Problema: A maioria dos assistentes sofre de amnésia digital; eles esquecem quem você é assim que a janela de chat fecha.
+
+A Solução: Um assistente que não lembra não é inteligente. A persistência de contexto através de bancos de dados vetoriais é prioritária. O SUSMI deve evoluir com o usuário, aprendendo preferências implícitas (ex: "não gosto de reuniões às sextas-feiras") e aplicando-as proativamente.
+
+Evolução em Camadas (Segurança na Complexidade):
+
+Estratégia: Construímos o corpo (automação e infraestrutura) primeiro, garantindo que o sistema consegue interagir com o mundo. Depois adicionamos o cérebro (capacidades cognitivas de IA). Por último, adicionamos a boca e os ouvidos (interfaces de voz e naturalidade). Tentar fazer tudo ao mesmo tempo resulta em sistemas instáveis e difíceis de depurar.
+
+2. Arquitetura do Sistema: O Cérebro Híbrido
+
+O núcleo do SUSMI não é um modelo de IA único, mas um sistema composto que opera através de um Roteador de Intenção Inteligente. Este componente crítico atua como um triagem de hospital, decidindo o caminho mais eficiente e seguro para cada solicitação.
+
+Fluxo de Dados Detalhado
+
+Input (Entrada): O usuário envia um comando via Texto, Voz (transcrita), Webhook ou Evento de Sistema (Cron).
+
+Router (Classificador): O "Porteiro". Analisa a entrada usando Regex (para comandos estritos) ou um modelo NLP leve (para intenções complexas).
+
+Decisão A: É um comando conhecido? (ex: "status do servidor") -> Envia para Motor de Regras.
+
+Decisão B: É uma pergunta aberta ou complexa? (ex: "analise meus gastos e sugira cortes") -> Envia para Motor de IA.
+
+Processamento (Agente/Regra): O módulo selecionado executa a tarefa.
+
+Ação/Execução: O sistema interage com APIs externas (Google, Bancos, IoT).
+
+Log/Memória: O resultado é armazenado. Se foi uma interação nova, o aprendizado é salvo na memória de longo prazo.
+
+Componentes Principais
+
+Core (Orquestrador Central):
+
+O coração do sistema em FastAPI. Gerencia a autenticação, validação de segurança, roteamento de mensagens e gestão de erros. Ele garante que um erro num módulo de IA não derrube o controle da casa inteligente.
+
+Motor de Regras (Hard Skills - Determinístico):
+
+Biblioteca de scripts Python otimizados. Executa ações onde o erro é inaceitável.
+
+Exemplos: "Backup de arquivos críticos às 03:00", "Bloquear acesso à internet no modo foco", "Enviar relatório financeiro mensal".
+
+Motor de IA (Soft Skills - Probabilístico):
+
+Integração com LLMs via LangChain/Semantic Kernel. Este motor lê documentação, interpreta linguagem natural vaga e estrutura dados não estruturados.
+
+Exemplos: "Leia este PDF técnico e explique como instalar a ferramenta X", "Com base na minha agenda, qual o melhor horário para ir à academia?".
+
+Memória (The Vault):
+
+Um sistema unificado de armazenamento que serve como o hipocampo do SUSMI, garantindo coerência temporal e personalização.
+
+3. Stack Tecnológica (A Escolha Robusta)
+
+A seleção tecnológica foca na estabilidade, escalabilidade e facilidade de manutenção, unindo a visão pragmática da engenharia de software com as necessidades modernas de IA.
+
+Backend (O Cérebro & Sistema Nervoso)
+
+Linguagem: Python 3.11+
+
+Porquê: É a lingua franca da IA e Automação. Permite integração nativa com PyTorch/TensorFlow (IA) e bibliotecas de automação (Selenium, Pandas, Requests) sem "cola" excessiva.
+
+Framework: FastAPI
+
+Porquê: Assíncrono por padrão (alta performance para I/O), validação de dados automática com Pydantic (reduz bugs de tipos) e documentação automática (Swagger UI para testar agentes).
+
+Gerenciamento de Tarefas: Celery + Redis
+
+Porquê: O assistente não pode "travar" enquanto pensa. Tarefas longas (resumir vídeos, raspar sites) são enviadas para filas de background (Celery), mantendo a interface responsiva.
+
+Frontend (A Interface - Fase 1 e 2)
+
+Web Dashboard: React 18+ com TypeScript e Tailwind CSS
+
+Porquê: React oferece um ecossistema de componentes vasto. TypeScript previne erros de dados no frontend. Tailwind permite prototipagem rápida de UI.
+
+Foco: Painel de controle tipo "Mission Control". Ao contrário de um chat linear (WhatsApp), precisamos de widgets visuais: Lista de Tarefas, Gráficos Financeiros, Status de Servidores e Logs de Atividade em tempo real.
+
+Dados e Memória (A Persistência)
+
+Banco Relacional (Memória Média): PostgreSQL
+
+Uso: Dados estruturados, críticos e relacionais. Perfis de usuários, credenciais criptografadas, registro histórico de tarefas e transações financeiras. A robustez ACID é essencial aqui.
+
+Cache (Memória Curta): Redis
+
+Uso: Contexto imediato da conversa ("buffer"), chaves de sessão, filas de mensagens e dados voláteis de alta velocidade.
+
+Vector Database (Memória Longa): pgvector (Postgres Ext.) ou Pinecone
+
+Uso: Embeddings semânticos. Transforma textos ("Gosto de café sem açúcar") em vetores matemáticos. Quando você pede um café meses depois, o sistema busca vetores próximos e sabe a sua preferência sem você repetir.
+
+4. Agentes Especializados (Módulos Funcionais)
+
+Para evitar um "Monólito Deus" (um código gigante que faz tudo e quebra fácil), o SUSMI é modular. Cada agente é um microsserviço lógico ou módulo isolado com suas próprias ferramentas e permissões.
+
+Agente
+
+Tipo
+
+Responsabilidade Detalhada
+
+Ferramentas & Integrações
+
+Susmi.Core
+
+Regra
+
+O Guardião. Gerencia roteamento, segurança, logs de auditoria, verificação de saúde do sistema (Health Checks) e atualizações.
+
+OS Libs, Systemd, Docker API, Auth Modules.
+
+Susmi.Agenda
+
+Híbrido
+
+O Secretário. Gerencia calendário, detecta conflitos de horário, negocia horários de reunião (via e-mail) e prepara briefings diários.
+
+Google Calendar API, Outlook Graph API, Zoom/Meet Links.
+
+Susmi.Finanças
+
+Regra
+
+O Contador. Rastreia gastos em tempo real, categoriza transações, alerta sobre desvios de orçamento e assinaturas recorrentes. Inicia em modo "somente leitura" por segurança.
+
+Open Banking APIs (Plaid/Belvo), Planilhas (GSheets), Scrapers de Fatura.
+
+Susmi.Dev
+
+Híbrido
+
+O Engenheiro. Auxilia em coding, busca documentação técnica, roda scripts de deploy, monitora status de servidores e faz git ops.
+
+GitHub API, StackOverflow, Terminal (SSH), Docker.
+
+Susmi.Home
+
+Regra
+
+O Mordomo. Controle de automação residencial. Ajusta cenários (Luz/Temperatura) baseados em horários ou presença. Monitora câmeras de segurança.
+
+Home Assistant API, Philips Hue, MQTT, Zigbee.
+
+Susmi.Researcher
+
+IA
+
+O Analista. Navega na web para buscar informações atualizadas, resume documentos longos (PDFs, Docs), organiza base de conhecimento (Obsidian/Notion).
+
+Google Search API, Beautiful Soup (Scraping), LangChain RAG.
+
+5. Estratégia de Memória (O Diferencial Competitivo)
+
+A "Memória Infinita" é o que separa o SUSMI de um GPT comum. Implementamos uma arquitetura de memória em três camadas distintas:
+
+Memória de Curto Prazo (Sensorial/Trabalho - RAM/Redis):
+
+Função: Mantém o fio da meada da conversa atual.
+
+Exemplo: Usuário: "Quanto custa um voo para Paris?" -> SUSMI: "€500". -> Usuário: "E para Londres?" (O sistema sabe que "E para" se refere a "preço de voo" devido a esta memória).
+
+Retenção: Minutos ou horas. Limpa após o fim da sessão.
+
+Memória de Médio Prazo (Episódica - PostgreSQL):
+
+Função: Registro de fatos e eventos ocorridos. Histórico de logs, tarefas concluídas, e-mails enviados.
+
+Exemplo: "O que eu fiz na terça-feira passada?" ou "Qual foi o último e-mail que mandei para o João?".
+
+Retenção: Meses ou Anos. Estruturada e consultável via SQL.
+
+Memória de Longo Prazo (Semântica - Vector Store):
+
+Função: A "Personalidade" e o "Conhecimento" acumulado. Armazena preferências, fatos sobre o usuário e padrões de comportamento.
+
+Mecanismo: Toda interação relevante é vetorizada e armazenada.
+
+Exemplo: O usuário menciona casualmente em Janeiro: "Odeio reuniões antes das 10h". Em Julho, ao agendar uma reunião, o sistema consulta o Vector DB, recupera essa preferência e sugere 11h, dizendo: "Marquei às 11h pois sei que prefere manhãs livres".
+
+6. Governança, Segurança e Privacidade
+
+Um sistema com acesso à sua vida digital precisa de travas de segurança robustas.
+
+Protocolo "Human-in-the-loop" (Confirmação Humana):
+
+Ações com efeitos colaterais irreversíveis ou custosos (ex: Transferir dinheiro, Deletar arquivos, Enviar e-mails para múltiplos destinatários, Compras online) NUNCA são automáticas. O sistema prepara a ação e gera um botão de "Aprovar" no Dashboard.
+
+Logs Imutáveis e Auditoria:
+
+"Quem fez isso?" Cada ação do SUSMI gera um log detalhado (Timestamp, Módulo, Ação, Resultado). Isso é crucial para depurar comportamentos inesperados da IA.
+
+Execução Local e Privacidade:
+
+Preferência por rodar scripts e processamento de dados localmente ou em container privado. Dados sensíveis (senhas bancárias) nunca são passados para o prompt do LLM. O LLM recebe apenas dados anonimizados ou o mínimo necessário para a tarefa.
+
+Permissões Granulares:
+
+O Agente "Researcher" tem acesso à Web, mas não tem acesso aos Arquivos Financeiros. O isolamento de escopo previne vazamento de dados caso um agente seja comprometido (ou alucine).
+
+7. Roadmap de Desenvolvimento Unificado
+
+Fase 1: A Fundação Silenciosa (Mês 1-2)
+
+Foco: Infraestrutura, Banco de Dados e Automação "Burra" (Regras).
+
+Meta: O sistema funciona via Texto/CLI e Dashboard. Ele obedece comandos com precisão cirúrgica.
+
+Entregáveis:
+
+Setup do ambiente Docker (FastAPI, Postgres, Redis).
+
+Dashboard Web "Mission Control" (React) para visualizar logs, inputs e status do sistema.
+
+Implementação do "Motor de Regras" (Automação básica: Leitura de Calendar, Envio de Email simples, Comandos de Sistema).
+
+Restrição: Sem Voz. Sem IA complexa (apenas chamadas simples). Foco total em estabilidade.
+
+Fase 2: A Descoberta da Inteligência (Mês 3-4)
+
+Foco: Integração de LLMs, Memória Vetorial e Raciocínio.
+
+Meta: O sistema entende contexto vago, resume informações e ajuda a tomar decisões. Deixa de ser apenas reativo para ser proativo.
+
+Entregáveis:
+
+Integração com LLM (OpenAI API ou Claude) via LangChain/Orchestrator.
+
+Implementação do Vector Database (Memória de Longo Prazo) e pipeline de ingestão de documentos.
+
+Ativação dos Agentes: Researcher (busca e resumo) e Dev (apoio técnico).
+
+Sistema de Sugestões: O SUSMI analisa a agenda e sugere "Bloquear tempo para foco" se o dia estiver cheio.
+
+Fase 3: A Voz e a Onipresença (Mês 5+)
+
+Foco: Interfaces Naturais, Mobile e Expansão Sensorial.
+
+Meta: A experiência "J.A.R.V.I.S." completa. Falar com o ar e ser respondido.
+
+Entregáveis:
+
+Módulo STT (Speech-to-Text com Whisper) e TTS (Text-to-Speech com ElevenLabs/Azure Neural).
+
+App Mobile (React Native) para comandos remotos e geolocalização.
+
+Hardware dedicado (opcional): Raspberry Pi com microfone para "Always listening" (Wake Word local "Hey Susmi").
+
+Integração total com IoT (Casa Inteligente).
+
+8. Estrutura de Diretórios (Padrão Ouro - Monorepo)
+
+A organização do código adota o padrão Monorepo para centralizar a gestão de dependências e facilitar o desenvolvimento integrado dos aplicativos.
+
+susmi-project/
+├── apps/                           # Aplicações Principais
+│   ├── backend/                    # O Cérebro (Python/FastAPI)
+│   │   ├── app/
+│   │   │   ├── core/               # Configurações globais, Segurança, Lógica do Router
+│   │   │   ├── agents/             # Módulos de inteligência (Lógica específica)
+│   │   │   │   ├── finance/        # Lógica do Agente Financeiro
+│   │   │   │   ├── home/           # Lógica do Agente IoT
+│   │   │   │   └── researcher/     # Lógica de RAG e Busca Web
+│   │   │   ├── memory/             # Gestores de persistência (Redis e VectorDB wrappers)
+│   │   │   ├── services/           # Conectores de infraestrutura (Gmail, Calendar, LLM Clients)
+│   │   │   ├── models/             # Schemas de Banco de Dados (SQLAlchemy ORM)
+│   │   │   └── api/                # Endpoints REST e WebSockets (Interface externa)
+│   │   ├── scripts/                # Automações locais, Cron Jobs e utilitários de manutenção
+│   │   └── tests/                  # Testes unitários e de integração (Vital para confiança)
+│   │
+│   └── frontend/                   # A Face (React/TypeScript)
+│       ├── src/
+│       │   ├── components/         # Widgets reutilizáveis (Gráficos, Tabelas, Cards)
+│       │   ├── pages/              # Telas do Dashboard (Visão Geral, Logs, Configurações)
+│       │   └── services/           # Clientes de API para falar com o Backend
+│
+├── packages/                       # Bibliotecas Compartilhadas (Shared Logic)
+│   ├── shared-types/               # Definições de tipos e interfaces TypeScript (usado no Front e Mobile)
+│   ├── ui/                         # Componentes de UI agnósticos (botões, inputs, layout base)
+│   ├── utils/                      # Funções utilitárias (formatadores de data, moeda, validações regex)
+│   ├── api-client/                 # Cliente HTTP autogerado ou compartilhado para consumir o backend
+│   └── config/                     # Constantes globais e configurações de ambiente compartilhadas
+│
+├── infrastructure/                 # DevOps e Deploy
+│   ├── docker-compose.yml          # Orquestração local
+│   ├── kubernetes/                 # Configs para produção (futuro)
+│   └── terraform/                  # Infraestrutura como Código
+│
+└── docs/                           # A Memória do Projeto
+    ├── architecture/               # Diagramas e decisões técnicas
+    └── logs/                       # "Diário de Bordo" do desenvolvimento
