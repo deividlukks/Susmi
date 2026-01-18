@@ -10,15 +10,15 @@
   },
   "dependencies": {
     "@susmi/types": "workspace:*",
-    "@supabase/supabase-js": "^2.90.1",
-    "axios": "^1.7.0"
+    "@supabase/supabase-js": "catalog:",
+    "axios": "catalog:"
   },
   "peerDependencies": {
-    "react": "^19.0.0"
+    "react": "catalog:"
   },
   "devDependencies": {
-    "@types/node": "^22.0.0",
-    "@types/react": "^19.0.0",
-    "typescript": "^5.7.2"
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "typescript": "catalog:"
   }
 }

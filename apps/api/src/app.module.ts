@@ -17,9 +17,6 @@ import { CalendarModule } from './calendar/calendar.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { SearchModule } from './search/search.module';
 import { AgentsModule } from './agents/agents.module';
-import { MemoryModule } from './memory/memory.module';
-import { IntegrationsModule } from './integrations/integrations.module';
-import { WorkflowsModule } from './workflows/workflows.module';
 import { VoiceModule } from './voice/voice.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
@@ -46,9 +43,6 @@ import { RolesGuard } from './common/guards/roles.guard';
     NotificationsModule,
     SearchModule,
     AgentsModule,
-    MemoryModule,
-    IntegrationsModule,
-    WorkflowsModule,
     VoiceModule,
   ],
   providers: [
@@ -62,4 +56,4 @@ import { RolesGuard } from './common/guards/roles.guard';
     },
   ],
 })
-export class AppModule {}
+export class AppModule { }

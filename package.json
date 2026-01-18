@@ -15,25 +15,30 @@
     "clean": "turbo run clean && rm -rf node_modules",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "typecheck": "turbo run typecheck",
-    "db:push": "cd apps/api && pnpm prisma db push",
-    "db:pull": "cd apps/api && pnpm prisma db pull",
-    "db:migrate": "cd apps/api && pnpm prisma migrate deploy",
-    "db:migrate:dev": "cd apps/api && pnpm prisma migrate dev",
-    "db:generate": "cd apps/api && pnpm prisma generate",
-    "db:studio": "cd apps/api && pnpm prisma studio",
-    "db:reset": "cd apps/api && pnpm prisma migrate reset",
+    "db:push": "pnpm --filter @susmi/database db:push",
+    "db:migrate": "pnpm --filter @susmi/database db:migrate",
+    "db:migrate:deploy": "pnpm --filter @susmi/database db:migrate:deploy",
+    "db:generate": "pnpm --filter @susmi/database db:generate",
+    "db:studio": "pnpm --filter @susmi/database db:studio",
+    "db:seed": "pnpm --filter @susmi/database db:seed",
     "test:connection": "node scripts/test-connection.js",
-    "start:local": "node scripts/test-connection.js && pnpm dev",
-    "create:admin": "node scripts/create-admin.js"
+    "start:local": "pwsh scripts/start-local.ps1"
   },
   "devDependencies": {
-    "prettier": "^3.2.5",
-    "turbo": "^2.3.0",
-    "typescript": "^5.7.2"
+    "prettier": "catalog:",
+    "turbo": "catalog:",
+    "typescript": "catalog:"
   },
   "packageManager": "pnpm@10.28.0",
   "engines": {
     "node": ">=22.0.0",
     "pnpm": ">=9.0.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "glob": "^10.4.0",
+      "rimraf": "^5.0.0",
+      "inflight": "npm:@pnpm/noop@1.0.0"
+    }
   }
 }

@@ -93,8 +93,10 @@ export abstract class BaseAgent {
 
     // Store in database for audit trail
     try {
+      const { v4: uuidv4 } = await import('uuid');
       await this.prisma.agent_logs.create({
         data: {
+          id: uuidv4(),
           agentName: logEntry.agentName,
           action: logEntry.action,
           result: logEntry.result,

@@ -12,9 +12,9 @@
   },
   "dependencies": {
     "@susmi/types": "workspace:*",
-    "date-fns": "^3.0.0"
+    "date-fns": "catalog:"
   },
   "devDependencies": {
-    "typescript": "^5.7.2"
+    "typescript": "catalog:"
   }
 }

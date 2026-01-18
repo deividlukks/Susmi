@@ -10,7 +10,7 @@ export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
-  ) {}
+  ) { }
 
   async validateUser(email: string, password: string): Promise<any> {
     const user = await this.usersService.findByEmail(email);
@@ -30,7 +30,7 @@ export class AuthService {
     const payload = { email: user.email, sub: user.id, role: user.role };
     const accessToken = this.jwtService.sign(payload);
     const refreshToken = this.jwtService.sign(payload, {
-      expiresIn: JWT_CONFIG.refreshTokenExpiry,
+      expiresIn: JWT_CONFIG.refreshTokenExpiry as any,
     });
 
     return {
@@ -47,7 +47,7 @@ export class AuthService {
     const payload = { email: user.email, sub: user.id, role: user.role };
     const accessToken = this.jwtService.sign(payload);
     const refreshToken = this.jwtService.sign(payload, {
-      expiresIn: JWT_CONFIG.refreshTokenExpiry,
+      expiresIn: JWT_CONFIG.refreshTokenExpiry as any,
     });
 
     return {

@@ -1,0 +1,41 @@
+{
+    "name": "@susmi/database",
+    "version": "1.0.0",
+    "description": "Shared database client and Prisma schema for Susmi",
+    "main": "./dist/index.js",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.mjs",
+            "require": "./dist/index.js"
+        },
+        "./client": {
+            "types": "./node_modules/.prisma/client/index.d.ts",
+            "default": "./node_modules/.prisma/client/index.js"
+        }
+    },
+    "scripts": {
+        "build": "tsup src/index.ts --format cjs,esm --dts",
+        "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+        "db:generate": "dotenv -e ../../.env -- prisma generate",
+        "db:migrate": "dotenv -e ../../.env -- prisma migrate dev",
+        "db:migrate:deploy": "dotenv -e ../../.env -- prisma migrate deploy",
+        "db:push": "dotenv -e ../../.env -- prisma db push",
+        "db:studio": "dotenv -e ../../.env -- prisma studio",
+        "db:seed": "dotenv -e ../../.env -- tsx prisma/seed.ts",
+        "postinstall": "prisma generate"
+    },
+    "dependencies": {
+        "@prisma/client": "catalog:"
+    },
+    "devDependencies": {
+        "@types/node": "catalog:",
+        "dotenv-cli": "catalog:",
+        "prisma": "catalog:",
+        "tsup": "catalog:",
+        "tsx": "catalog:",
+        "typescript": "catalog:"
+    }
+}

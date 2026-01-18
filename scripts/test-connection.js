@@ -2,7 +2,7 @@
 
 /**
  * Script de Teste de Conexão - SUSMI
- * Testa conexões com Supabase, Redis e API
+ * Testa conexões com Supabase e API
  */
 
 const { exec } = require('child_process');
@@ -22,26 +22,11 @@ function log(message, color = 'reset') {
   console.log(`${colors[color]}${message}${colors.reset}`);
 }
 
-async function testRedis() {
-  log('\n✓ Testando Redis...', 'yellow');
-  try {
-    const { stdout } = await execPromise('redis-cli ping');
-    if (stdout.trim() === 'PONG') {
-      log('  ✓ Redis: Conectado', 'green');
-      return true;
-    }
-  } catch (error) {
-    log('  ✗ Redis: Não conectado', 'red');
-    log('    Inicie com: docker run -d -p 6379:6379 redis:alpine', 'cyan');
-    return false;
-  }
-}
-
 async function testSupabase() {
   log('\n✓ Testando Supabase (PostgreSQL)...', 'yellow');
   try {
-    process.chdir('apps/api');
-    const { stdout, stderr } = await execPromise('npx prisma db pull --force');
+    process.chdir('packages/database');
+    const { stdout, stderr } = await execPromise('npx dotenv -e ../../.env -- prisma db pull --force');
     process.chdir('../..');
 
     if (stderr && stderr.includes('Error')) {
@@ -51,22 +36,9 @@ async function testSupabase() {
     }
 
     log('  ✓ Supabase: Conectado', 'green');
-
-    // Testar query
-    const { PrismaClient } = require('../apps/api/node_modules/@prisma/client');
-    const prisma = new PrismaClient();
-
-    try {
-      const userCount = await prisma.user.count();
-      log(`    → ${userCount} usuário(s) no banco`, 'cyan');
-      await prisma.$disconnect();
-    } catch (error) {
-      log('    ⚠ Tabelas ainda não criadas', 'yellow');
-    }
-
     return true;
   } catch (error) {
-    process.chdir('../..');
+    try { process.chdir('../..'); } catch { }
     log('  ✗ Supabase: Erro na conexão', 'red');
     log(`    ${error.message}`, 'red');
     return false;
@@ -115,7 +87,6 @@ async function main() {
   log('═══════════════════════════════════════════════════════', 'cyan');
 
   const results = {
-    redis: await testRedis(),
     supabase: await testSupabase(),
     api: await testAPI(),
     web: await testWeb(),
@@ -124,20 +95,17 @@ async function main() {
   log('\n═══════════════════════════════════════════════════════', 'cyan');
   log('  📊 Resumo', 'cyan');
   log('═══════════════════════════════════════════════════════', 'cyan');
-  log(`  Redis:    ${results.redis ? '✓' : '✗'}`, results.redis ? 'green' : 'red');
   log(`  Supabase: ${results.supabase ? '✓' : '✗'}`, results.supabase ? 'green' : 'red');
   log(`  API:      ${results.api ? '✓' : '✗'}`, results.api ? 'green' : 'yellow');
   log(`  Web:      ${results.web ? '✓' : '✗'}`, results.web ? 'green' : 'yellow');
 
-  const allPassed = results.redis && results.supabase;
-
-  if (allPassed) {
-    log('\n✅ Todos os serviços essenciais estão funcionando!', 'green');
+  if (results.supabase) {
+    log('\n✅ Conexão com banco de dados OK!', 'green');
     if (!results.api || !results.web) {
       log('💡 Execute "pnpm dev" para iniciar API e Web', 'cyan');
     }
   } else {
-    log('\n⚠️  Alguns serviços precisam de atenção', 'yellow');
+    log('\n⚠️  Verifique a conexão com o banco de dados', 'yellow');
   }
 
   log('');

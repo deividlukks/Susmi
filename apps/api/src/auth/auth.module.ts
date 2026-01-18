@@ -15,7 +15,7 @@ import { JWT_CONFIG } from '@susmi/config';
     PassportModule,
     JwtModule.register({
       secret: JWT_CONFIG.secret,
-      signOptions: { expiresIn: JWT_CONFIG.accessTokenExpiry },
+      signOptions: { expiresIn: JWT_CONFIG.accessTokenExpiry as any },
     }),
   ],
   providers: [AuthService, LocalStrategy, SupabaseStrategy],
