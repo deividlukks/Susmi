@@ -1,0 +1,416 @@
+.container {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    height: calc(100vh - 4rem);
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.header h1 { font-size: 1.75rem; font-weight: 600; color: var(--text-primary); }
+.header p { color: var(--text-secondary); margin-top: 0.25rem; }
+
+.addButton {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.75rem 1.25rem; background: var(--primary); color: white;
+    border: none; border-radius: 8px; font-weight: 500; cursor: pointer;
+    transition: all 0.2s;
+}
+.addButton:hover { background: var(--primary-dark); }
+
+.tabs {
+    display: flex; gap: 0.5rem; margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;
+}
+
+.tab {
+    display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem;
+    border: none; background: transparent; color: var(--text-secondary);
+    font-weight: 500; cursor: pointer; border-radius: 8px; transition: all 0.2s;
+}
+.tab:hover { background: var(--bg-tertiary); color: var(--text-primary); }
+.tab.active { background: var(--primary); color: white; }
+
+.badge {
+    background: #ef4444; color: white; font-size: 0.7rem;
+    padding: 0.125rem 0.5rem; border-radius: 10px; font-weight: 600;
+}
+
+.tabContent { flex: 1; min-height: 0; }
+
+/* Email Layout */
+.emailLayout {
+    display: grid;
+    grid-template-columns: 200px 350px 1fr;
+    gap: 1rem;
+    height: 100%;
+}
+
+@media (max-width: 1024px) {
+    .emailLayout { grid-template-columns: 1fr; }
+    .emailSidebar, .emailDetail { display: none; }
+}
+
+.emailSidebar {
+    display: flex; flex-direction: column; gap: 1rem;
+}
+
+.searchBox {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.75rem 1rem; background: var(--bg-secondary);
+    border: 1px solid var(--border-color); border-radius: 8px;
+}
+.searchBox input {
+    flex: 1; background: transparent; border: none;
+    color: var(--text-primary); font-size: 0.9rem;
+}
+.searchBox input:focus { outline: none; }
+.searchBox svg { color: var(--text-secondary); }
+
+.folderNav { display: flex; flex-direction: column; gap: 0.25rem; }
+
+.folderBtn {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.75rem 1rem; background: transparent; border: none;
+    color: var(--text-secondary); font-weight: 500; cursor: pointer;
+    border-radius: 8px; transition: all 0.2s; text-align: left;
+}
+.folderBtn:hover { background: var(--bg-tertiary); color: var(--text-primary); }
+.folderBtn.active { background: var(--bg-tertiary); color: var(--primary); }
+
+.emailList {
+    background: var(--bg-secondary); border: 1px solid var(--border-color);
+    border-radius: 12px; display: flex; flex-direction: column; overflow: hidden;
+}
+
+.listHeader {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1rem; border-bottom: 1px solid var(--border-color);
+    font-size: 0.875rem; color: var(--text-secondary);
+}
+.listHeader button {
+    padding: 0.5rem; background: transparent; border: none;
+    color: var(--text-secondary); cursor: pointer; border-radius: 6px;
+}
+.listHeader button:hover { background: var(--bg-tertiary); color: var(--text-primary); }
+
+.emptyState {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    color: var(--text-secondary); padding: 2rem;
+}
+.emptyState svg { opacity: 0.5; margin-bottom: 0.5rem; }
+
+.emailItem {
+    display: flex; align-items: flex-start; gap: 0.75rem;
+    padding: 1rem; border-bottom: 1px solid var(--border-color);
+    cursor: pointer; transition: background 0.2s;
+}
+.emailItem:hover { background: var(--bg-tertiary); }
+.emailItem.selected { background: rgba(59, 130, 246, 0.1); }
+.emailItem.unread { background: var(--bg-primary); }
+.emailItem.unread .emailSubject { font-weight: 600; }
+
+.starBtn {
+    padding: 0.25rem; background: transparent; border: none;
+    color: var(--text-secondary); cursor: pointer; flex-shrink: 0;
+}
+.starBtn:hover { color: #f59e0b; }
+.starBtn.starred { color: #f59e0b; }
+.starBtn.starred svg { fill: #f59e0b; }
+
+.emailItemContent { flex: 1; min-width: 0; }
+
+.emailItemHeader {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 0.25rem;
+}
+
+.emailFrom {
+    font-weight: 500; color: var(--text-primary);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.emailDate { font-size: 0.75rem; color: var(--text-secondary); flex-shrink: 0; }
+
+.emailSubject {
+    display: block; font-size: 0.875rem; color: var(--text-primary);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    margin-bottom: 0.25rem;
+}
+
+.emailPreview {
+    display: block; font-size: 0.8rem; color: var(--text-secondary);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.emailDetail {
+    background: var(--bg-secondary); border: 1px solid var(--border-color);
+    border-radius: 12px; display: flex; flex-direction: column; overflow: hidden;
+}
+
+.noEmailSelected {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    color: var(--text-secondary);
+}
+.noEmailSelected svg { opacity: 0.5; margin-bottom: 0.5rem; }
+
+.detailHeader {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1.5rem; border-bottom: 1px solid var(--border-color);
+}
+.detailHeader h2 { font-size: 1.25rem; font-weight: 600; color: var(--text-primary); }
+
+.detailActions { display: flex; gap: 0.5rem; }
+.detailActions button {
+    padding: 0.5rem; background: transparent; border: none;
+    color: var(--text-secondary); cursor: pointer; border-radius: 6px;
+}
+.detailActions button:hover { background: var(--bg-tertiary); color: var(--text-primary); }
+
+.detailMeta {
+    padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-color);
+    font-size: 0.875rem; color: var(--text-secondary);
+    display: flex; flex-direction: column; gap: 0.25rem;
+}
+
+.detailBody {
+    flex: 1; padding: 1.5rem; overflow-y: auto;
+    font-size: 0.9rem; color: var(--text-primary); line-height: 1.6;
+    white-space: pre-wrap;
+}
+
+/* Messaging Layout (WhatsApp/Telegram) */
+.messagingLayout { height: 100%; }
+
+.connectPrompt {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; height: 100%; text-align: center;
+    padding: 2rem;
+}
+
+.connectIcon {
+    width: 100px; height: 100px; border-radius: 50%;
+    background: var(--bg-tertiary); display: flex;
+    align-items: center; justify-content: center;
+    color: var(--primary); margin-bottom: 1.5rem;
+}
+
+.connectPrompt h2 {
+    font-size: 1.5rem; font-weight: 600; color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.connectPrompt p {
+    color: var(--text-secondary); max-width: 400px; margin-bottom: 1.5rem;
+}
+
+.connectBtn {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.75rem 1.5rem; background: var(--primary); color: white;
+    border: none; border-radius: 8px; font-weight: 500; cursor: pointer;
+    transition: all 0.2s;
+}
+.connectBtn:hover { background: var(--primary-dark); }
+
+.chatLayout {
+    display: grid; grid-template-columns: 350px 1fr;
+    height: 100%; gap: 1rem;
+}
+
+@media (max-width: 768px) {
+    .chatLayout { grid-template-columns: 1fr; }
+    .chatView { display: none; }
+}
+
+.chatList {
+    background: var(--bg-secondary); border: 1px solid var(--border-color);
+    border-radius: 12px; display: flex; flex-direction: column; overflow: hidden;
+}
+
+.chatList .searchBox {
+    margin: 1rem; border-radius: 8px;
+}
+
+.chatItem {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 1rem; cursor: pointer; transition: background 0.2s;
+    border-bottom: 1px solid var(--border-color);
+}
+.chatItem:hover { background: var(--bg-tertiary); }
+
+.chatAvatar {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: var(--primary); color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 600; font-size: 1.25rem; flex-shrink: 0;
+}
+
+.chatInfo { flex: 1; min-width: 0; }
+
+.chatHeader {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 0.25rem;
+}
+
+.chatName {
+    font-weight: 500; color: var(--text-primary);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.chatTime { font-size: 0.75rem; color: var(--text-secondary); flex-shrink: 0; }
+
+.chatPreview {
+    display: block; font-size: 0.8rem; color: var(--text-secondary);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.unreadBadge {
+    background: var(--primary); color: white;
+    font-size: 0.7rem; font-weight: 600;
+    padding: 0.25rem 0.5rem; border-radius: 10px;
+    flex-shrink: 0;
+}
+
+.chatView {
+    background: var(--bg-secondary); border: 1px solid var(--border-color);
+    border-radius: 12px; display: flex; flex-direction: column;
+}
+
+.selectChat {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    color: var(--text-secondary);
+}
+.selectChat svg { opacity: 0.5; margin-bottom: 0.5rem; }
+
+/* Settings Layout */
+.settingsLayout {
+    display: flex; flex-direction: column; gap: 1.5rem;
+}
+
+.settingsSection {
+    background: var(--bg-secondary); border: 1px solid var(--border-color);
+    border-radius: 12px; padding: 1.5rem;
+}
+
+.settingsSection h2 {
+    font-size: 1.1rem; font-weight: 600; color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.accountsList { display: flex; flex-direction: column; gap: 0.75rem; }
+
+.noAccounts {
+    text-align: center; padding: 2rem; color: var(--text-secondary);
+}
+
+.addAccountBtn {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.75rem 1.25rem; background: var(--primary); color: white;
+    border: none; border-radius: 8px; font-weight: 500; cursor: pointer;
+    margin-top: 1rem;
+}
+
+.accountItem {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1rem; background: var(--bg-tertiary); border-radius: 8px;
+}
+
+.accountInfo { display: flex; align-items: center; gap: 1rem; }
+.accountInfo svg { color: var(--primary); }
+
+.accountEmail { display: block; font-weight: 500; color: var(--text-primary); }
+.accountProvider { display: block; font-size: 0.8rem; color: var(--text-secondary); }
+
+.accountStatus { display: flex; align-items: center; gap: 0.5rem; }
+
+.connected {
+    display: flex; align-items: center; gap: 0.25rem;
+    color: #22c55e; font-size: 0.875rem;
+}
+.disconnected { color: var(--text-secondary); font-size: 0.875rem; }
+
+.integrationCard {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1rem; background: var(--bg-tertiary); border-radius: 8px;
+}
+
+.integrationInfo { display: flex; align-items: center; gap: 1rem; }
+.integrationInfo svg { color: var(--primary); }
+.integrationInfo h3 { font-size: 1rem; font-weight: 500; color: var(--text-primary); }
+.integrationInfo p { font-size: 0.8rem; color: var(--text-secondary); }
+
+.integrationActions { display: flex; align-items: center; gap: 1rem; }
+
+.disconnectBtn {
+    display: flex; align-items: center; gap: 0.25rem;
+    padding: 0.5rem 1rem; background: transparent;
+    border: 1px solid #ef4444; color: #ef4444;
+    border-radius: 6px; font-size: 0.875rem; cursor: pointer;
+}
+.disconnectBtn:hover { background: rgba(239, 68, 68, 0.1); }
+
+/* Modal */
+.modalOverlay {
+    position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1000; padding: 1rem;
+}
+
+.modal {
+    background: var(--bg-secondary); border-radius: 16px;
+    width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto;
+}
+
+.modalHeader {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1.5rem; border-bottom: 1px solid var(--border-color);
+}
+.modalHeader h2 { font-size: 1.25rem; font-weight: 600; color: var(--text-primary); }
+.modalHeader button {
+    padding: 0.5rem; background: transparent; border: none;
+    color: var(--text-secondary); cursor: pointer; border-radius: 6px;
+}
+
+.modalBody { padding: 1.5rem; }
+
+.modalFooter {
+    display: flex; justify-content: flex-end; gap: 0.75rem;
+    padding: 1.5rem; border-top: 1px solid var(--border-color);
+}
+
+.formGroup { margin-bottom: 1rem; }
+.formGroup label {
+    display: block; font-size: 0.875rem; font-weight: 500;
+    color: var(--text-primary); margin-bottom: 0.5rem;
+}
+.formGroup input, .formGroup textarea {
+    width: 100%; padding: 0.75rem 1rem; background: var(--bg-primary);
+    border: 1px solid var(--border-color); border-radius: 8px;
+    color: var(--text-primary); font-size: 0.9rem;
+}
+.formGroup input:focus, .formGroup textarea:focus {
+    outline: none; border-color: var(--primary);
+}
+.formGroup textarea { resize: vertical; min-height: 150px; }
+
+.btnPrimary {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.75rem 1.5rem; background: var(--primary); color: white;
+    border: none; border-radius: 8px; font-weight: 500; cursor: pointer;
+}
+
+.btnSecondary {
+    padding: 0.75rem 1.5rem; background: transparent; color: var(--text-primary);
+    border: 1px solid var(--border-color); border-radius: 8px;
+    font-weight: 500; cursor: pointer;
+}

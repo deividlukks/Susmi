@@ -1,0 +1,56 @@
+// Automation Enums - Sincronizado com backend
+export enum TriggerType {
+  TIME = 'TIME',
+  CRON = 'CRON',
+  EVENT = 'EVENT',
+  WEBHOOK = 'WEBHOOK',
+  DEVICE_STATE = 'DEVICE_STATE',
+  SENSOR = 'SENSOR',
+  LOCATION = 'LOCATION',
+  MANUAL = 'MANUAL',
+}
+
+export enum ActionType {
+  AGENT_EXECUTE = 'AGENT_EXECUTE',
+  API_CALL = 'API_CALL',
+  DEVICE_CONTROL = 'DEVICE_CONTROL',
+  SEND_NOTIFICATION = 'SEND_NOTIFICATION',
+  SEND_EMAIL = 'SEND_EMAIL',
+  SEND_MESSAGE = 'SEND_MESSAGE',
+  DELAY = 'DELAY',
+  CONDITION = 'CONDITION',
+  LOOP = 'LOOP',
+  SCRIPT = 'SCRIPT',
+  WEBHOOK = 'WEBHOOK',
+}
+
+export enum ConditionOperator {
+  EQUALS = 'EQUALS',
+  NOT_EQUALS = 'NOT_EQUALS',
+  GREATER_THAN = 'GREATER_THAN',
+  LESS_THAN = 'LESS_THAN',
+  CONTAINS = 'CONTAINS',
+  STARTS_WITH = 'STARTS_WITH',
+  ENDS_WITH = 'ENDS_WITH',
+  MATCHES_REGEX = 'MATCHES_REGEX',
+  IS_TRUE = 'IS_TRUE',
+  IS_FALSE = 'IS_FALSE',
+  IS_NULL = 'IS_NULL',
+  IS_NOT_NULL = 'IS_NOT_NULL',
+}
+
+export enum AutomationStatus {
+  PENDING = 'PENDING',
+  RUNNING = 'RUNNING',
+  COMPLETED = 'COMPLETED',
+  FAILED = 'FAILED',
+  CANCELLED = 'CANCELLED',
+  PAUSED = 'PAUSED',
+}
+
+export enum WorkflowStatus {
+  DRAFT = 'DRAFT',
+  ACTIVE = 'ACTIVE',
+  PAUSED = 'PAUSED',
+  ARCHIVED = 'ARCHIVED',
+}

@@ -1,0 +1,28 @@
+{
+  "name": "susmi",
+  "version": "1.0.0",
+  "private": true,
+  "description": "S.U.S.M.I - Assistente Inteligente Pessoal",
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "test": "turbo test",
+    "clean": "turbo clean && rm -rf node_modules",
+    "api:dev": "turbo dev --filter=@susmi/api",
+    "web:dev": "turbo dev --filter=@susmi/web",
+    "ai:dev": "cd apps/ai-service && python -m uvicorn main:app --reload --port 8001",
+    "db:generate": "pnpm --filter @susmi/api prisma generate",
+    "db:push": "pnpm --filter @susmi/api prisma db push",
+    "db:migrate": "pnpm --filter @susmi/api prisma migrate dev",
+    "db:studio": "pnpm --filter @susmi/api prisma studio"
+  },
+  "devDependencies": {
+    "turbo": "^2.5.4",
+    "typescript": "^5.8.3"
+  },
+  "packageManager": "pnpm@10.28.1",
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

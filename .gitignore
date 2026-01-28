@@ -1,0 +1,64 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+.next/
+.turbo/
+build/
+out/
+
+# Environment
+.env
+.env copy
+.env.example
+.env.local
+.env.*.local
+.env.vercel
+.env.railway
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Testing
+coverage/
+.nyc_output/
+
+# Python (AI Service)
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+venv/
+.venv/
+env/
+.pytest_cache/
+
+# Prisma
+apps/api/prisma/migrations/
+
+# Misc
+*.tgz
+.cache/
+
+#Outros
+.claude
+.claude/
+nul
+bkp/
+logs
+docs/

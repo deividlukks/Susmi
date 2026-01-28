@@ -1,0 +1,1661 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ==========================================
+// User & Authentication
+// ==========================================
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String?  @map("password_hash")
+  name         String?
+  avatarUrl    String?  @map("avatar_url")
+  role         String   @default("USER")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  tasks                 Task[]
+  conversations         Conversation[]
+  preferences           UserPreference?
+  communicationChannels CommunicationChannel[]
+  communicationMessages CommunicationMessage[]
+  scheduledMessages     ScheduledMessage[]
+  calendarChannels      CalendarChannel[]
+  calendarEvents        CalendarEvent[]
+  eventSuggestions      EventSuggestion[]
+  routeOptimizations    RouteOptimization[]
+  knowledgeBases        KnowledgeBase[]
+  knowledgeDocuments    KnowledgeDocument[]
+  webSearches           WebSearch[]
+  bankAccounts          BankAccount[]
+  transactions          Transaction[]
+  budgets               Budget[]
+  financialGoals        FinancialGoal[]
+  bankConnections       BankConnection[]
+  smartHomes            SmartHome[]
+  medications           Medication[]
+  workouts              Workout[]
+  healthMetrics         HealthMetric[]
+  wearableDevices       WearableDevice[]
+  healthGoals           HealthGoal[]
+
+  @@map("users")
+}
+
+model UserPreference {
+  id     String @id @default(uuid())
+  userId String @unique @map("user_id")
+
+  // Preferences
+  theme          String  @default("dark")
+  language       String  @default("pt-BR")
+  notifications  Boolean @default(true)
+  voiceEnabled   Boolean @default(false) @map("voice_enabled")
+
+  // LLM Settings
+  preferredModel String @default("gpt-4") @map("preferred_model")
+  temperature    Float  @default(0.7)
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_preferences")
+}
+
+// ==========================================
+// Tasks & Productivity
+// ==========================================
+
+model Task {
+  id          String    @id @default(uuid())
+  userId      String    @map("user_id")
+  title       String
+  description String?
+  status      String    @default("PENDING")
+  priority    String    @default("MEDIUM")
+  dueDate     DateTime? @map("due_date")
+  completedAt DateTime? @map("completed_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  // Optional parent task for subtasks
+  parentId String? @map("parent_id")
+  parent   Task?   @relation("Subtasks", fields: [parentId], references: [id])
+  subtasks Task[]  @relation("Subtasks")
+
+  // Relations
+  user User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tags Tag[]
+
+  @@map("tasks")
+}
+
+model Tag {
+  id    String @id @default(uuid())
+  name  String @unique
+  color String @default("#6366f1")
+
+  tasks Task[]
+
+  @@map("tags")
+}
+
+// ==========================================
+// Conversations & AI
+// ==========================================
+
+model Conversation {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  title     String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages Message[]
+
+  @@map("conversations")
+}
+
+model Message {
+  id             String   @id @default(uuid())
+  conversationId String   @map("conversation_id")
+  role           String
+  content        String
+  metadata       String?
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  // Relations
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@map("messages")
+}
+
+// ==========================================
+// Agents & Automation (Future)
+// ==========================================
+
+model Agent {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  type        String
+  config      String   @default("{}")
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  automations Automation[]
+
+  @@map("agents")
+}
+
+model Automation {
+  id              String    @id @default(uuid())
+  agentId         String    @map("agent_id")
+  name            String
+  description     String?
+  trigger         String
+  conditions      String?   // JSON conditions
+  actions         String
+  isActive        Boolean   @default(true) @map("is_active")
+  cooldownSeconds Int?      @map("cooldown_seconds")
+  maxRuns         Int?      @map("max_runs")
+  runCount        Int       @default(0) @map("run_count")
+  lastRun         DateTime? @map("last_run")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  agent Agent           @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  logs  AutomationLog[]
+
+  @@map("automations")
+}
+
+model AutomationLog {
+  id           String   @id @default(uuid())
+  automationId String   @map("automation_id")
+  status       String
+  input        String?
+  output       String?
+  result       String?  // JSON result
+  error        String?
+  duration     Int?     // Execution duration in ms
+  userId       String?  @map("user_id")
+  triggeredBy  String?  @map("triggered_by") // manual, schedule, event, webhook
+  executedAt   DateTime @default(now()) @map("executed_at")
+
+  automation Automation @relation(fields: [automationId], references: [id], onDelete: Cascade)
+
+  @@index([automationId, executedAt])
+  @@index([userId])
+  @@map("automation_logs")
+}
+
+// ==========================================
+// Agent Memory System (3 Levels)
+// ==========================================
+
+model AgentMemory {
+  id           String    @id @default(uuid())
+  agentId      String    @map("agent_id")
+  userId       String    @map("user_id")
+  type         String    // SHORT_TERM, LONG_TERM, EPISODIC, SEMANTIC
+  content      String
+  embedding    String?   // JSON array with embedding vector
+  importance   Float     @default(0.5)
+  accessCount  Int       @default(0) @map("access_count")
+  lastAccessed DateTime? @map("last_accessed")
+  expiresAt    DateTime? @map("expires_at")
+  metadata     String    @default("{}")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  @@index([agentId, userId])
+  @@index([type])
+  @@index([expiresAt])
+  @@map("agent_memories")
+}
+
+// ==========================================
+// Audit & Governance
+// ==========================================
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  userId     String?  @map("user_id")
+  action     String   // CREATE, READ, UPDATE, DELETE, EXECUTE, LOGIN, LOGOUT
+  resource   String   // agents, automations, tasks, users, etc.
+  resourceId String?  @map("resource_id")
+  details    String   @default("{}") // JSON with operation details
+  oldValue   String?  @map("old_value") // JSON with previous state
+  newValue   String?  @map("new_value") // JSON with new state
+  ipAddress  String?  @map("ip_address")
+  userAgent  String?  @map("user_agent")
+  status     String   @default("SUCCESS") // SUCCESS, FAILED
+  duration   Int?     // ms
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@index([userId, createdAt])
+  @@index([action, resource])
+  @@index([resourceId])
+  @@map("audit_logs")
+}
+
+// ==========================================
+// Workflows
+// ==========================================
+
+model Workflow {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  nodes       String   // JSON array of workflow nodes
+  status      String   @default("DRAFT") // DRAFT, ACTIVE, PAUSED, ARCHIVED
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  logs WorkflowLog[]
+
+  @@map("workflows")
+}
+
+model WorkflowLog {
+  id            String   @id @default(uuid())
+  workflowId    String   @map("workflow_id")
+  executionId   String   @map("execution_id")
+  status        String   // SUCCESS, FAILED
+  nodesExecuted Int      @default(0) @map("nodes_executed")
+  result        String?  // JSON result
+  error         String?
+  duration      Int?     // ms
+  executedAt    DateTime @default(now()) @map("executed_at")
+
+  workflow Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+
+  @@index([workflowId, executedAt])
+  @@map("workflow_logs")
+}
+
+// ==========================================
+// Notifications
+// ==========================================
+
+model Notification {
+  id        String    @id @default(uuid())
+  userId    String    @map("user_id")
+  title     String
+  message   String
+  type      String    @default("INFO") // INFO, WARNING, ERROR, SUCCESS, AUTOMATION
+  isRead    Boolean   @default(false) @map("is_read")
+  readAt    DateTime? @map("read_at")
+  metadata  String    @default("{}")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  @@index([userId, isRead])
+  @@index([userId, createdAt])
+  @@map("notifications")
+}
+
+// ==========================================
+// Communication Management
+// ==========================================
+
+model CommunicationChannel {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  type        String   // EMAIL, WHATSAPP, TELEGRAM
+  provider    String?  // gmail, outlook, smtp, etc. (for email)
+  name        String   // User-friendly name
+
+  // Connection details (encrypted in production)
+  credentials String   // JSON string with encrypted credentials
+  metadata    String   @default("{}")  // Additional provider-specific data
+
+  isActive    Boolean  @default(true) @map("is_active")
+  isVerified  Boolean  @default(false) @map("is_verified")
+
+  lastSyncAt  DateTime? @map("last_sync_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user              User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages          CommunicationMessage[]
+  scheduledMessages ScheduledMessage[]
+
+  @@unique([userId, type, provider])
+  @@map("communication_channels")
+}
+
+model CommunicationMessage {
+  id        String   @id @default(uuid())
+  channelId String   @map("channel_id")
+  userId    String   @map("user_id")
+
+  direction String   // INBOUND, OUTBOUND
+  status    String   @default("PENDING") // PENDING, SENT, DELIVERED, READ, FAILED
+
+  // Message content
+  subject     String?  // For emails
+  body        String
+  htmlBody    String?  @map("html_body") // For emails
+  attachments String   @default("[]") // JSON array of attachment metadata
+
+  // Sender/Recipient info
+  fromAddress String   @map("from_address")
+  toAddresses String   @map("to_addresses") // JSON array
+  ccAddresses String   @default("[]") @map("cc_addresses") // JSON array
+  bccAddresses String  @default("[]") @map("bcc_addresses") // JSON array
+
+  // External IDs
+  externalId String?  @map("external_id") // Provider's message ID
+  threadId   String?  @map("thread_id") // For email threads
+
+  // Metadata
+  metadata String   @default("{}")
+
+  // AI Processing
+  aiSummary     String?  @map("ai_summary")
+  aiCategories  String?  @map("ai_categories") // JSON array
+  aiSentiment   String?  @map("ai_sentiment")
+
+  sentAt      DateTime? @map("sent_at")
+  deliveredAt DateTime? @map("delivered_at")
+  readAt      DateTime? @map("read_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  channel CommunicationChannel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  user    User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  logs    MessageLog[]
+
+  @@index([userId, channelId])
+  @@index([externalId])
+  @@map("communication_messages")
+}
+
+model ScheduledMessage {
+  id        String    @id @default(uuid())
+  channelId String    @map("channel_id")
+  userId    String    @map("user_id")
+
+  status String    @default("PENDING") // PENDING, PROCESSING, SENT, FAILED, CANCELLED
+
+  // Message content
+  subject     String?
+  body        String
+  htmlBody    String?   @map("html_body")
+  attachments String    @default("[]")
+
+  // Recipients
+  toAddresses  String    @map("to_addresses") // JSON array
+  ccAddresses  String    @default("[]") @map("cc_addresses")
+  bccAddresses String    @default("[]") @map("bcc_addresses")
+
+  // Scheduling
+  scheduledFor DateTime  @map("scheduled_for")
+  executedAt   DateTime? @map("executed_at")
+
+  // Retry logic
+  retryCount Int       @default(0) @map("retry_count")
+  maxRetries Int       @default(3) @map("max_retries")
+  lastError  String?   @map("last_error")
+
+  metadata String    @default("{}")
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  channel CommunicationChannel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  user    User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([scheduledFor, status])
+  @@index([userId])
+  @@map("scheduled_messages")
+}
+
+model MessageLog {
+  id        String   @id @default(uuid())
+  messageId String   @map("message_id")
+
+  event     String   // SENT, DELIVERED, READ, FAILED, BOUNCED, etc.
+  status    String
+  details   String?
+  error     String?
+  metadata  String   @default("{}")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  message CommunicationMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@index([messageId])
+  @@map("message_logs")
+}
+
+// ==========================================
+// Calendar & Time Management
+// ==========================================
+
+model CalendarChannel {
+  id       String @id @default(uuid())
+  userId   String @map("user_id")
+  type     String // GOOGLE, OUTLOOK
+  name     String // User-friendly name
+  email    String // Calendar account email
+
+  // OAuth2 credentials (encrypted in production)
+  credentials String // JSON string with access/refresh tokens
+  metadata    String @default("{}") // Provider-specific data
+
+  // Sync settings
+  syncEnabled Boolean  @default(true) @map("sync_enabled")
+  lastSyncAt  DateTime? @map("last_sync_at")
+  syncErrors  Int      @default(0) @map("sync_errors")
+
+  isActive   Boolean  @default(true) @map("is_active")
+  isVerified Boolean  @default(false) @map("is_verified")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user   User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  events CalendarEvent[]
+
+  @@unique([userId, type, email])
+  @@map("calendar_channels")
+}
+
+model CalendarEvent {
+  id        String  @id @default(uuid())
+  channelId String? @map("channel_id") // Null for local-only events
+  userId    String  @map("user_id")
+
+  // Event details
+  title       String
+  description String?
+  location    String?
+
+  // Time
+  startTime DateTime  @map("start_time")
+  endTime   DateTime  @map("end_time")
+  timezone  String    @default("UTC")
+  isAllDay  Boolean   @default(false) @map("is_all_day")
+
+  // Recurrence
+  recurrence    String?   @map("recurrence") // RRULE format
+  recurrenceEnd DateTime? @map("recurrence_end")
+
+  // Status
+  status       String  @default("CONFIRMED") // CONFIRMED, TENTATIVE, CANCELLED
+  visibility   String  @default("PUBLIC") // PUBLIC, PRIVATE
+  isBusy       Boolean @default(true) @map("is_busy") // Affects free/busy status
+
+  // External sync
+  externalId   String?   @map("external_id") // Provider's event ID
+  lastSyncedAt DateTime? @map("last_synced_at")
+  syncStatus   String    @default("SYNCED") // SYNCED, PENDING, ERROR
+
+  // Attendees
+  attendees String @default("[]") // JSON array of attendees
+
+  // Reminders
+  reminders String @default("[]") // JSON array of reminder configurations
+
+  // Route optimization
+  hasLocation     Boolean            @default(false) @map("has_location")
+  routeOptimizations RouteOptimization[] @relation("EventRoute")
+
+  // Metadata
+  metadata String @default("{}")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  channel     CalendarChannel? @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  suggestions EventSuggestion[]
+
+  @@index([userId, startTime])
+  @@index([channelId])
+  @@index([externalId])
+  @@map("calendar_events")
+}
+
+model EventSuggestion {
+  id      String @id @default(uuid())
+  userId  String @map("user_id")
+  eventId String? @map("event_id") // Null for new event suggestions
+
+  // Suggestion details
+  suggestedTitle       String?   @map("suggested_title")
+  suggestedDescription String?   @map("suggested_description")
+  suggestedStartTime   DateTime? @map("suggested_start_time")
+  suggestedEndTime     DateTime? @map("suggested_end_time")
+  suggestedLocation    String?   @map("suggested_location")
+
+  // AI reasoning
+  reasoning   String  // Why this suggestion was made
+  confidence  Float   @default(0.0) // 0.0 to 1.0
+  aiModel     String  @map("ai_model")
+
+  // Context used for suggestion
+  contextData String  @default("{}") @map("context_data") // JSON with user calendar, tasks, etc.
+
+  // User feedback
+  status     String   @default("PENDING") // PENDING, ACCEPTED, REJECTED, MODIFIED
+  acceptedAt DateTime? @map("accepted_at")
+  rejectedAt DateTime? @map("rejected_at")
+  feedback   String?  // User's feedback on why rejected/modified
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user  User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event CalendarEvent? @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status])
+  @@map("event_suggestions")
+}
+
+model RouteOptimization {
+  id     String @id @default(uuid())
+  userId String @map("user_id")
+
+  // Route details
+  date           DateTime  @map("date") // Date for this route optimization
+  events         String    @default("[]") // JSON array of event IDs in optimized order
+  originalOrder  String    @default("[]") @map("original_order") // Original event order
+
+  // Optimization results
+  totalDistance    Float   @map("total_distance") // in kilometers
+  totalTravelTime  Int     @map("total_travel_time") // in minutes
+  estimatedSavings Int     @map("estimated_savings") // time saved in minutes
+
+  // Route segments
+  segments String  @default("[]") // JSON array of route segments with directions
+
+  // Optimization settings
+  mode            String  @default("DRIVING") // DRIVING, WALKING, TRANSIT, BICYCLING
+  optimizeFor     String  @default("TIME") @map("optimize_for") // TIME, DISTANCE, COST
+  avoidTolls      Boolean @default(false) @map("avoid_tolls")
+  avoidHighways   Boolean @default(false) @map("avoid_highways")
+
+  // Status
+  status         String   @default("PENDING") // PENDING, OPTIMIZED, APPLIED, REJECTED
+  appliedAt      DateTime? @map("applied_at")
+  rejectedAt     DateTime? @map("rejected_at")
+
+  // Metadata
+  metadata String @default("{}")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  eventRoutes CalendarEvent[] @relation("EventRoute")
+
+  @@index([userId, date])
+  @@index([status])
+  @@map("route_optimizations")
+}
+
+// ==========================================
+// Knowledge Management
+// ==========================================
+
+model KnowledgeBase {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  name        String
+  description String?
+
+  // Vector DB settings
+  vectorProvider String  @default("pinecone") @map("vector_provider") // pinecone, weaviate, qdrant
+  vectorIndex    String? @map("vector_index") // Index/Collection name in vector DB
+  embeddingModel String  @default("text-embedding-3-small") @map("embedding_model")
+
+  // Stats
+  documentCount Int @default(0) @map("document_count")
+  chunkCount    Int @default(0) @map("chunk_count")
+
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user      User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  documents KnowledgeDocument[]
+
+  @@unique([userId, name])
+  @@map("knowledge_bases")
+}
+
+model KnowledgeDocument {
+  id              String  @id @default(uuid())
+  knowledgeBaseId String  @map("knowledge_base_id")
+  userId          String  @map("user_id")
+
+  // Document info
+  title       String
+  description String?
+  type        String   // PDF, TEXT, URL, NOTE, EMAIL
+  source      String?  // Original URL or file path
+  mimeType    String?  @map("mime_type")
+  fileSize    Int?     @map("file_size") // bytes
+
+  // Content
+  originalContent String?  @map("original_content") // Raw extracted text
+  processedContent String? @map("processed_content") // Cleaned/processed text
+
+  // AI Processing
+  aiSummary    String? @map("ai_summary")
+  aiKeywords   String  @default("[]") @map("ai_keywords") // JSON array
+  aiCategories String  @default("[]") @map("ai_categories") // JSON array
+
+  // Processing status
+  status       String   @default("PENDING") // PENDING, PROCESSING, COMPLETED, FAILED
+  chunkCount   Int      @default(0) @map("chunk_count")
+  errorMessage String?  @map("error_message")
+  processedAt  DateTime? @map("processed_at")
+
+  // Metadata
+  metadata  String   @default("{}")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  knowledgeBase KnowledgeBase    @relation(fields: [knowledgeBaseId], references: [id], onDelete: Cascade)
+  user          User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  chunks        KnowledgeChunk[]
+
+  @@index([knowledgeBaseId])
+  @@index([userId, status])
+  @@map("knowledge_documents")
+}
+
+model KnowledgeChunk {
+  id         String @id @default(uuid())
+  documentId String @map("document_id")
+
+  // Chunk content
+  content    String
+  chunkIndex Int    @map("chunk_index") // Position in document
+
+  // Vector DB reference
+  vectorId String? @map("vector_id") // ID in vector database
+
+  // Metadata for retrieval
+  startChar  Int?    @map("start_char")
+  endChar    Int?    @map("end_char")
+  pageNumber Int?    @map("page_number") // For PDFs
+  section    String? // Section/heading if applicable
+
+  // Embedding info
+  embeddingModel String? @map("embedding_model")
+  embeddedAt     DateTime? @map("embedded_at")
+
+  metadata  String   @default("{}")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  document KnowledgeDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@index([documentId])
+  @@index([vectorId])
+  @@map("knowledge_chunks")
+}
+
+model WebSearch {
+  id     String @id @default(uuid())
+  userId String @map("user_id")
+
+  // Search details
+  query      String
+  provider   String   @default("google") // google, bing, duckduckgo, brave
+
+  // Results
+  results    String   @default("[]") // JSON array of search results
+  resultCount Int     @default(0) @map("result_count")
+
+  // AI Processing
+  aiSummary  String?  @map("ai_summary") // Summary of search results
+
+  // Status
+  status     String   @default("PENDING") // PENDING, COMPLETED, FAILED
+  errorMessage String? @map("error_message")
+
+  // Timing
+  searchDuration Int?     @map("search_duration") // ms
+
+  metadata  String   @default("{}")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("web_searches")
+}
+
+// ==========================================
+// Financial Management
+// ==========================================
+
+model BankAccount {
+  id     String @id @default(uuid())
+  userId String @map("user_id")
+
+  // Account info
+  name        String  // User-friendly name (e.g., "Conta Nubank")
+  bankName    String  @map("bank_name") // e.g., "Nubank", "Itaú"
+  bankCode    String? @map("bank_code") // Bank code (e.g., "260" for Nubank)
+  accountType String  @default("CHECKING") @map("account_type") // CHECKING, SAVINGS, CREDIT_CARD, INVESTMENT
+
+  // Account identifiers
+  accountNumber String? @map("account_number")
+  agencyNumber  String? @map("agency_number")
+  lastFourDigits String? @map("last_four_digits") // For credit cards
+
+  // Open Banking / Integration
+  provider       String? // pluggy, belvo, manual
+  connectionId   String? @map("connection_id") // External connection ID
+  itemId         String? @map("item_id") // External item ID
+  externalId     String? @map("external_id") // External account ID from provider
+  credentials    String  @default("{}") // Encrypted credentials/tokens
+  lastSyncAt     DateTime? @map("last_sync_at")
+  syncStatus     String  @default("MANUAL") @map("sync_status") // MANUAL, CONNECTED, ERROR, EXPIRED
+
+  // Balance
+  currentBalance  Float   @default(0) @map("current_balance")
+  availableCredit Float?  @map("available_credit") // For credit cards
+  creditLimit     Float?  @map("credit_limit") // For credit cards
+  currency        String  @default("BRL")
+
+  // Settings
+  color     String  @default("#6366f1")
+  icon      String  @default("bank")
+  isActive  Boolean @default(true) @map("is_active")
+  isHidden  Boolean @default(false) @map("is_hidden") // Hide from dashboard
+
+  metadata  String   @default("{}")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions   Transaction[]
+  financialGoals FinancialGoal[]
+
+  @@unique([userId, name])
+  @@index([userId, isActive])
+  @@map("bank_accounts")
+}
+
+model TransactionCategory {
+  id String @id @default(uuid())
+
+  // Category info
+  name     String
+  icon     String  @default("tag")
+  color    String  @default("#6366f1")
+  type     String  // INCOME, EXPENSE, TRANSFER
+
+  // Hierarchy
+  parentId String? @map("parent_id")
+  parent   TransactionCategory?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children TransactionCategory[] @relation("CategoryHierarchy")
+
+  // System vs User category
+  isSystem Boolean @default(false) @map("is_system") // Built-in categories
+  userId   String? @map("user_id") // Null for system categories
+
+  // Auto-categorization rules
+  keywords String @default("[]") // JSON array of keywords for auto-categorization
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  transactions Transaction[]
+  budgets      Budget[]
+
+  @@unique([name, userId])
+  @@map("transaction_categories")
+}
+
+model Transaction {
+  id        String @id @default(uuid())
+  userId    String @map("user_id")
+  accountId String @map("account_id")
+
+  // Transaction details
+  type        String   // INCOME, EXPENSE, TRANSFER
+  amount      Float    // Positive value
+  currency    String   @default("BRL")
+  description String
+  notes       String?
+
+  // Categorization
+  categoryId String? @map("category_id")
+
+  // Date/Time
+  date         DateTime @default(now())
+  competenceDate DateTime? @map("competence_date") // For recurring/scheduled
+  isRecurring  Boolean  @default(false) @map("is_recurring")
+  recurringId  String?  @map("recurring_id") // Link to recurring template
+
+  // Status
+  status       String   @default("COMPLETED") // PENDING, COMPLETED, CANCELLED, SCHEDULED
+  isPending    Boolean  @default(false) @map("is_pending")
+  isConfirmed  Boolean  @default(true) @map("is_confirmed")
+
+  // External/Import info
+  externalId   String?  @map("external_id") // ID from bank
+  importSource String?  @map("import_source") // bank_sync, csv_import, manual
+  importedAt   DateTime? @map("imported_at")
+
+  // Transfer info
+  transferAccountId String? @map("transfer_account_id") // For transfers between accounts
+  transferPairId    String? @map("transfer_pair_id") // Link to the other side of transfer
+
+  // Location/Merchant
+  merchantName     String? @map("merchant_name")
+  merchantCategory String? @map("merchant_category") // MCC code
+  location         String? // JSON with lat/lng
+
+  // Attachments
+  attachments String @default("[]") // JSON array of attachment URLs
+
+  // AI Processing
+  aiCategory    String? @map("ai_category") // AI suggested category
+  aiConfidence  Float?  @map("ai_confidence")
+  aiTags        String  @default("[]") @map("ai_tags") // JSON array
+
+  metadata  String   @default("{}")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user     User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  account  BankAccount          @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  category TransactionCategory? @relation(fields: [categoryId], references: [id])
+
+  @@index([userId, date])
+  @@index([accountId, date])
+  @@index([categoryId])
+  @@index([externalId])
+  @@map("transactions")
+}
+
+model Budget {
+  id     String @id @default(uuid())
+  userId String @map("user_id")
+
+  // Budget info
+  name       String
+  categoryId String? @map("category_id") // Null for total budget
+  amount     Float
+  currency   String  @default("BRL")
+
+  // Period
+  period     String   @default("MONTHLY") // WEEKLY, MONTHLY, YEARLY, CUSTOM
+  startDate  DateTime @map("start_date")
+  endDate    DateTime? @map("end_date") // Null for recurring
+
+  // Progress
+  spent      Float    @default(0) // Current spending
+  remaining  Float    @default(0) // Budget - spent
+
+  // Alerts
+  alertAt      Int?     @map("alert_at") // Alert when X% spent (e.g., 80)
+  alertSent    Boolean  @default(false) @map("alert_sent")
+  alertSentAt  DateTime? @map("alert_sent_at")
+
+  isActive  Boolean  @default(true) @map("is_active")
+  metadata  String   @default("{}")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user     User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category TransactionCategory? @relation(fields: [categoryId], references: [id])
+
+  @@unique([userId, name, startDate])
+  @@index([userId, period])
+  @@map("budgets")
+}
+
+model FinancialGoal {
+  id     String @id @default(uuid())
+  userId String @map("user_id")
+
+  // Goal info
+  name        String
+  description String?
+  icon        String  @default("target")
+  color       String  @default("#10b981")
+
+  // Target
+  targetAmount   Float    @map("target_amount")
+  currentAmount  Float    @default(0) @map("current_amount")
+  currency       String   @default("BRL")
+  targetDate     DateTime? @map("target_date")
+
+  // Progress
+  progressPercent Float   @default(0) @map("progress_percent")
+  monthlyTarget   Float?  @map("monthly_target") // Suggested monthly savings
+
+  // Status
+  status     String   @default("ACTIVE") // ACTIVE, COMPLETED, CANCELLED, PAUSED
+  completedAt DateTime? @map("completed_at")
+
+  // Linked account for savings
+  linkedAccountId String? @map("linked_account_id")
+
+  isActive  Boolean  @default(true) @map("is_active")
+  metadata  String   @default("{}")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  linkedAccount BankAccount? @relation(fields: [linkedAccountId], references: [id])
+
+  @@index([userId, status])
+  @@map("financial_goals")
+}
+
+model RecurringTransaction {
+  id     String @id @default(uuid())
+  userId String @map("user_id")
+
+  // Template info
+  name        String
+  type        String // INCOME, EXPENSE
+  amount      Float
+  currency    String @default("BRL")
+  description String
+  accountId   String @map("account_id")
+  categoryId  String? @map("category_id")
+
+  // Recurrence settings
+  frequency     String   // DAILY, WEEKLY, BIWEEKLY, MONTHLY, YEARLY
+  interval      Int      @default(1) // Every X periods
+  dayOfMonth    Int?     @map("day_of_month") // For monthly (1-31)
+  dayOfWeek     Int?     @map("day_of_week") // For weekly (0-6)
+  startDate     DateTime @map("start_date")
+  endDate       DateTime? @map("end_date")
+
+  // Execution
+  lastExecutedAt  DateTime? @map("last_executed_at")
+  nextExecutionAt DateTime? @map("next_execution_at")
+  executionCount  Int       @default(0) @map("execution_count")
+
+  // Auto-create settings
+  autoCreate      Boolean @default(true) @map("auto_create") // Auto-create transactions
+  daysInAdvance   Int     @default(0) @map("days_in_advance") // Create X days before
+
+  isActive  Boolean  @default(true) @map("is_active")
+  metadata  String   @default("{}")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([userId, isActive])
+  @@index([nextExecutionAt])
+  @@map("recurring_transactions")
+}
+
+model BankConnection {
+  id     String @id @default(uuid())
+  userId String @map("user_id")
+
+  // Provider info
+  provider     String  // pluggy, belvo
+  connectionId String  @map("connection_id") // Provider's connection ID
+  itemId       String  @map("item_id") // Provider's item ID
+  accessToken  String? @map("access_token") // Encrypted access token
+  refreshToken String? @map("refresh_token") // Encrypted refresh token
+
+  // Status
+  status       String   @default("PENDING") // PENDING, CONNECTED, ERROR, EXPIRED
+  errorMessage String?  @map("error_message")
+
+  // Sync info
+  lastSyncAt   DateTime? @map("last_sync_at")
+  lastErrorAt  DateTime? @map("last_error_at")
+
+  metadata  String   @default("{}")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([provider, connectionId])
+  @@map("bank_connections")
+}
+
+// ==========================================
+// Home Automation
+// ==========================================
+
+model SmartHome {
+  id     String @id @default(uuid())
+  userId String @map("user_id")
+
+  // Home info
+  name     String
+  address  String?
+  timezone String  @default("America/Sao_Paulo")
+
+  // Settings
+  awayMode       Boolean @default(false) @map("away_mode")
+  guestMode      Boolean @default(false) @map("guest_mode")
+  vacationMode   Boolean @default(false) @map("vacation_mode")
+
+  metadata  String   @default("{}")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rooms            SmartRoom[]
+  devices          SmartDevice[]
+  routines         AutomationRoutine[]
+  voiceAssistants  VoiceAssistant[]
+  scenes           SmartScene[]
+
+  @@unique([userId, name])
+  @@map("smart_homes")
+}
+
+model SmartRoom {
+  id     String @id @default(uuid())
+  homeId String @map("home_id")
+
+  // Room info
+  name  String
+  type  String  @default("OTHER") // LIVING_ROOM, BEDROOM, KITCHEN, BATHROOM, OFFICE, GARAGE, OUTDOOR, OTHER
+  floor Int     @default(0) // Floor number
+  icon  String  @default("door-open")
+  color String  @default("#6366f1")
+
+  // Environmental data (from sensors)
+  temperature Float? // Current temperature
+  humidity    Float? // Current humidity
+  luminosity  Float? // Current light level
+
+  metadata  String   @default("{}")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  home    SmartHome     @relation(fields: [homeId], references: [id], onDelete: Cascade)
+  devices SmartDevice[]
+
+  @@unique([homeId, name])
+  @@map("smart_rooms")
+}
+
+model SmartDevice {
+  id     String @id @default(uuid())
+  homeId String @map("home_id")
+  roomId String? @map("room_id")
+
+  // Device info
+  name         String
+  type         String  // LIGHT, SWITCH, THERMOSTAT, LOCK, CAMERA, SENSOR, SPEAKER, TV, FAN, BLINDS, OUTLET, OTHER
+  manufacturer String? // Philips, Tuya, Sonoff, etc.
+  model        String?
+  firmwareVersion String? @map("firmware_version")
+
+  // Connection
+  protocol     String  @default("WIFI") // WIFI, ZIGBEE, ZWAVE, BLUETOOTH, MQTT, HTTP
+  ipAddress    String? @map("ip_address")
+  macAddress   String? @map("mac_address")
+  deviceId     String? @map("device_id") // External device ID
+  accessToken  String? @map("access_token") // Device-specific token
+
+  // Integration
+  integrationProvider String? @map("integration_provider") // tuya, philips_hue, tasmota, esphome, homeassistant
+  integrationConfig   String  @default("{}") @map("integration_config") // JSON config
+
+  // State
+  isOnline     Boolean  @default(false) @map("is_online")
+  isOn         Boolean  @default(false) @map("is_on")
+  currentState String   @default("{}") @map("current_state") // JSON with current state
+  lastStateAt  DateTime? @map("last_state_at")
+
+  // Capabilities (JSON array of supported features)
+  capabilities String @default("[]") // ["on_off", "brightness", "color", "temperature", "motion", etc.]
+
+  // Settings
+  icon      String  @default("lightbulb")
+  color     String  @default("#6366f1")
+  isActive  Boolean @default(true) @map("is_active")
+  isFavorite Boolean @default(false) @map("is_favorite")
+
+  metadata  String   @default("{}")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  home           SmartHome       @relation(fields: [homeId], references: [id], onDelete: Cascade)
+  room           SmartRoom?      @relation(fields: [roomId], references: [id])
+  routineActions RoutineAction[]
+  sceneActions   SceneAction[]
+  deviceLogs     DeviceLog[]
+
+  @@unique([homeId, name])
+  @@index([homeId, type])
+  @@index([roomId])
+  @@map("smart_devices")
+}
+
+model AutomationRoutine {
+  id     String @id @default(uuid())
+  homeId String @map("home_id")
+
+  // Routine info
+  name        String
+  description String?
+  icon        String  @default("zap")
+  color       String  @default("#f59e0b")
+
+  // Trigger configuration
+  triggerType   String  // TIME, SUNRISE, SUNSET, DEVICE_STATE, SENSOR, VOICE, LOCATION, MANUAL
+  triggerConfig String  @default("{}") @map("trigger_config") // JSON trigger configuration
+
+  // Conditions (all must be true)
+  conditions String @default("[]") // JSON array of conditions
+
+  // Execution settings
+  isActive     Boolean @default(true) @map("is_active")
+  runOnce      Boolean @default(false) @map("run_once") // Run once then disable
+  cooldownSecs Int     @default(0) @map("cooldown_secs") // Min seconds between executions
+
+  // Statistics
+  lastRunAt   DateTime? @map("last_run_at")
+  runCount    Int       @default(0) @map("run_count")
+  failCount   Int       @default(0) @map("fail_count")
+
+  metadata  String   @default("{}")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  home    SmartHome       @relation(fields: [homeId], references: [id], onDelete: Cascade)
+  actions RoutineAction[]
+
+  @@unique([homeId, name])
+  @@index([homeId, isActive])
+  @@map("automation_routines")
+}
+
+model RoutineAction {
+  id        String @id @default(uuid())
+  routineId String @map("routine_id")
+
+  // Action configuration
+  order       Int     @default(0) // Execution order
+  actionType  String  // DEVICE_CONTROL, SCENE, DELAY, NOTIFICATION, WEBHOOK, VOICE_ANNOUNCE
+  deviceId    String? @map("device_id")
+  actionData  String  @default("{}") @map("action_data") // JSON action parameters
+
+  // Delay before action
+  delaySeconds Int @default(0) @map("delay_seconds")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  routine AutomationRoutine @relation(fields: [routineId], references: [id], onDelete: Cascade)
+  device  SmartDevice?      @relation(fields: [deviceId], references: [id])
+
+  @@index([routineId, order])
+  @@map("routine_actions")
+}
+
+model SmartScene {
+  id     String @id @default(uuid())
+  homeId String @map("home_id")
+
+  // Scene info
+  name        String
+  description String?
+  icon        String @default("palette")
+  color       String @default("#8b5cf6")
+
+  // Settings
+  isActive   Boolean @default(true) @map("is_active")
+  isFavorite Boolean @default(false) @map("is_favorite")
+
+  metadata  String   @default("{}")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  home    SmartHome     @relation(fields: [homeId], references: [id], onDelete: Cascade)
+  actions SceneAction[]
+
+  @@unique([homeId, name])
+  @@map("smart_scenes")
+}
+
+model SceneAction {
+  id      String @id @default(uuid())
+  sceneId String @map("scene_id")
+
+  // Action
+  deviceId    String @map("device_id")
+  targetState String @default("{}") @map("target_state") // JSON with desired state
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  scene  SmartScene  @relation(fields: [sceneId], references: [id], onDelete: Cascade)
+  device SmartDevice @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+
+  @@unique([sceneId, deviceId])
+  @@map("scene_actions")
+}
+
+model VoiceAssistant {
+  id     String @id @default(uuid())
+  homeId String @map("home_id")
+
+  // Assistant info
+  provider    String // ALEXA, GOOGLE_HOME, SIRI
+  name        String // User-friendly name
+  deviceId    String? @map("device_id") // Provider's device ID
+
+  // Authentication
+  accessToken  String? @map("access_token")
+  refreshToken String? @map("refresh_token")
+  expiresAt    DateTime? @map("expires_at")
+
+  // Webhook for receiving commands
+  webhookUrl    String? @map("webhook_url")
+  webhookSecret String? @map("webhook_secret")
+
+  // Status
+  isActive       Boolean   @default(true) @map("is_active")
+  isConnected    Boolean   @default(false) @map("is_connected")
+  lastActivityAt DateTime? @map("last_activity_at")
+
+  metadata  String   @default("{}")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  home SmartHome @relation(fields: [homeId], references: [id], onDelete: Cascade)
+
+  @@unique([homeId, provider])
+  @@map("voice_assistants")
+}
+
+model DeviceLog {
+  id       String @id @default(uuid())
+  deviceId String @map("device_id")
+
+  // Log info
+  eventType   String   // STATE_CHANGE, COMMAND, ERROR, ONLINE, OFFLINE
+  eventData   String   @default("{}") @map("event_data") // JSON with event details
+  source      String?  // user, routine, scene, voice, api
+  triggeredBy String?  @map("triggered_by") // User ID or routine ID
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  device SmartDevice @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+
+  @@index([deviceId, createdAt])
+  @@index([eventType])
+  @@map("device_logs")
+}
+
+// ==========================================
+// Health & Wellness
+// ==========================================
+
+model Medication {
+  id     String @id @default(uuid())
+  userId String @map("user_id")
+
+  // Medication info
+  name          String
+  genericName   String?  @map("generic_name")
+  dosage        String   // e.g., "500mg", "10ml"
+  form          String   @default("PILL") // PILL, CAPSULE, LIQUID, INJECTION, TOPICAL, INHALER, DROPS, OTHER
+  instructions  String?  // e.g., "Take with food"
+  purpose       String?  // What is it for
+  prescribedBy  String?  @map("prescribed_by")
+
+  // Quantity tracking
+  currentStock    Int      @default(0) @map("current_stock")
+  minStock        Int      @default(5) @map("min_stock") // Alert when below this
+  refillReminder  Boolean  @default(true) @map("refill_reminder")
+
+  // Schedule
+  frequency       String   @default("DAILY") // DAILY, TWICE_DAILY, WEEKLY, AS_NEEDED, CUSTOM
+  timesPerDay     Int      @default(1) @map("times_per_day")
+  specificTimes   String   @default("[]") @map("specific_times") // JSON array of times ["08:00", "20:00"]
+  daysOfWeek      String   @default("[]") @map("days_of_week") // JSON array [0,1,2,3,4,5,6]
+
+  // Duration
+  startDate       DateTime @map("start_date")
+  endDate         DateTime? @map("end_date")
+  isOngoing       Boolean  @default(true) @map("is_ongoing")
+
+  // Settings
+  icon      String  @default("pill")
+  color     String  @default("#ef4444")
+  isActive  Boolean @default(true) @map("is_active")
+
+  metadata  String   @default("{}")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user      User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reminders MedicationReminder[]
+  logs      MedicationLog[]
+
+  @@index([userId, isActive])
+  @@map("medications")
+}
+
+model MedicationReminder {
+  id           String @id @default(uuid())
+  medicationId String @map("medication_id")
+
+  // Reminder settings
+  time          String   // HH:MM format
+  daysOfWeek    String   @default("[0,1,2,3,4,5,6]") @map("days_of_week") // JSON array
+
+  // Notification settings
+  notifyBefore  Int      @default(5) @map("notify_before") // Minutes before
+  notifyVia     String   @default("PUSH") @map("notify_via") // PUSH, SMS, EMAIL, VOICE
+  repeatIfMissed Boolean @default(true) @map("repeat_if_missed")
+  repeatInterval Int     @default(15) @map("repeat_interval") // Minutes between repeats
+  maxRepeats    Int      @default(3) @map("max_repeats")
+
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  medication Medication @relation(fields: [medicationId], references: [id], onDelete: Cascade)
+
+  @@index([medicationId])
+  @@map("medication_reminders")
+}
+
+model MedicationLog {
+  id           String @id @default(uuid())
+  medicationId String @map("medication_id")
+
+  // Log info
+  scheduledTime DateTime  @map("scheduled_time")
+  takenTime     DateTime? @map("taken_time")
+  status        String    @default("PENDING") // PENDING, TAKEN, SKIPPED, MISSED
+  doseTaken     String?   @map("dose_taken") // Actual dose if different
+  notes         String?
+
+  // Side effects
+  sideEffects   String   @default("[]") @map("side_effects") // JSON array
+  mood          Int?     // 1-5 scale
+  effectiveness Int?     // 1-5 scale
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  medication Medication @relation(fields: [medicationId], references: [id], onDelete: Cascade)
+
+  @@index([medicationId, scheduledTime])
+  @@index([status])
+  @@map("medication_logs")
+}
+
+model ExerciseType {
+  id String @id @default(uuid())
+
+  // Exercise info
+  name        String
+  category    String  // CARDIO, STRENGTH, FLEXIBILITY, BALANCE, SPORTS, OTHER
+  description String?
+  icon        String  @default("dumbbell")
+  color       String  @default("#10b981")
+
+  // Metrics this exercise can track
+  tracksDistance   Boolean @default(false) @map("tracks_distance")
+  tracksDuration   Boolean @default(true) @map("tracks_duration")
+  tracksCalories   Boolean @default(true) @map("tracks_calories")
+  tracksHeartRate  Boolean @default(false) @map("tracks_heart_rate")
+  tracksReps       Boolean @default(false) @map("tracks_reps")
+  tracksSets       Boolean @default(false) @map("tracks_sets")
+  tracksWeight     Boolean @default(false) @map("tracks_weight")
+
+  // MET value for calorie calculation
+  metValue    Float   @default(5.0) @map("met_value")
+
+  isSystem    Boolean @default(false) @map("is_system")
+  userId      String? @map("user_id") // Null for system types
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  workouts Workout[]
+
+  @@unique([name, userId])
+  @@map("exercise_types")
+}
+
+model Workout {
+  id     String @id @default(uuid())
+  userId String @map("user_id")
+
+  // Workout info
+  exerciseTypeId String   @map("exercise_type_id")
+  name           String?  // Optional custom name
+  notes          String?
+
+  // Timing
+  startTime   DateTime @map("start_time")
+  endTime     DateTime? @map("end_time")
+  duration    Int?     // Minutes (calculated or manual)
+
+  // Metrics
+  distance       Float?  // Kilometers
+  calories       Int?    // Burned
+  avgHeartRate   Int?    @map("avg_heart_rate")
+  maxHeartRate   Int?    @map("max_heart_rate")
+  steps          Int?
+
+  // Strength training
+  sets           Int?
+  reps           Int?
+  weight         Float?  // Kg
+
+  // Intensity
+  intensity      String? // LOW, MODERATE, HIGH, VERY_HIGH
+  perceivedEffort Int?   @map("perceived_effort") // 1-10 RPE scale
+
+  // Location (for outdoor activities)
+  location       String? // JSON with lat/lng
+  routeData      String? @map("route_data") // JSON with GPS track
+
+  // Source
+  source         String  @default("MANUAL") // MANUAL, FITBIT, GOOGLE_FIT, GARMIN, STRAVA, APPLE_HEALTH
+  externalId     String? @map("external_id")
+
+  metadata  String   @default("{}")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exerciseType ExerciseType @relation(fields: [exerciseTypeId], references: [id])
+
+  @@index([userId, startTime])
+  @@index([exerciseTypeId])
+  @@index([externalId])
+  @@map("workouts")
+}
+
+model HealthMetric {
+  id     String @id @default(uuid())
+  userId String @map("user_id")
+
+  // Metric info
+  type      String   // WEIGHT, HEIGHT, BODY_FAT, BMI, BLOOD_PRESSURE, HEART_RATE, BLOOD_GLUCOSE, SLEEP, STEPS, WATER_INTAKE, CALORIES_CONSUMED
+  value     Float    // Primary value
+  value2    Float?   // Secondary value (e.g., diastolic for blood pressure)
+  unit      String   // kg, cm, %, bpm, mmHg, mg/dL, hours, steps, ml, kcal
+
+  // Context
+  notes         String?
+  measuredAt    DateTime @map("measured_at")
+  timeOfDay     String?  @map("time_of_day") // MORNING, AFTERNOON, EVENING, NIGHT
+
+  // Source
+  source        String   @default("MANUAL") // MANUAL, FITBIT, GOOGLE_FIT, GARMIN, APPLE_HEALTH, DEVICE
+  deviceId      String?  @map("device_id") // If from a specific device
+
+  metadata  String   @default("{}")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, type, measuredAt])
+  @@map("health_metrics")
+}
+
+model WearableDevice {
+  id     String @id @default(uuid())
+  userId String @map("user_id")
+
+  // Device info
+  provider      String  // FITBIT, GOOGLE_FIT, GARMIN, STRAVA, APPLE_HEALTH, SAMSUNG_HEALTH, WHOOP, OURA
+  deviceName    String  @map("device_name")
+  deviceType    String? @map("device_type") // SMARTWATCH, FITNESS_BAND, SMART_RING, SMART_SCALE, OTHER
+  deviceId      String? @map("device_id") // Provider's device ID
+
+  // Authentication
+  accessToken   String? @map("access_token")
+  refreshToken  String? @map("refresh_token")
+  tokenExpiry   DateTime? @map("token_expiry")
+  scope         String? // Granted permissions
+
+  // Sync settings
+  syncEnabled   Boolean  @default(true) @map("sync_enabled")
+  syncInterval  Int      @default(60) @map("sync_interval") // Minutes
+  lastSyncAt    DateTime? @map("last_sync_at")
+  lastSyncStatus String? @map("last_sync_status") // SUCCESS, FAILED, PARTIAL
+
+  // What to sync
+  syncWorkouts   Boolean @default(true) @map("sync_workouts")
+  syncHeartRate  Boolean @default(true) @map("sync_heart_rate")
+  syncSleep      Boolean @default(true) @map("sync_sleep")
+  syncSteps      Boolean @default(true) @map("sync_steps")
+  syncWeight     Boolean @default(true) @map("sync_weight")
+
+  isActive  Boolean  @default(true) @map("is_active")
+  metadata  String   @default("{}")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  syncLogs  WearableSyncLog[]
+
+  @@unique([userId, provider])
+  @@index([userId, isActive])
+  @@map("wearable_devices")
+}
+
+model WearableSyncLog {
+  id        String @id @default(uuid())
+  deviceId  String @map("device_id")
+
+  // Sync info
+  syncType      String   // FULL, INCREMENTAL, MANUAL
+  startTime     DateTime @map("start_time")
+  endTime       DateTime? @map("end_time")
+  status        String   @default("IN_PROGRESS") // IN_PROGRESS, SUCCESS, FAILED, PARTIAL
+
+  // Results
+  itemsSynced   Int      @default(0) @map("items_synced")
+  itemsFailed   Int      @default(0) @map("items_failed")
+  errorMessage  String?  @map("error_message")
+
+  // Data ranges synced
+  dataFromDate  DateTime? @map("data_from_date")
+  dataToDate    DateTime? @map("data_to_date")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  device WearableDevice @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+
+  @@index([deviceId, createdAt])
+  @@map("wearable_sync_logs")
+}
+
+model HealthGoal {
+  id     String @id @default(uuid())
+  userId String @map("user_id")
+
+  // Goal info
+  type          String  // WEIGHT, STEPS, EXERCISE_MINUTES, WATER_INTAKE, SLEEP, CALORIES
+  targetValue   Float   @map("target_value")
+  currentValue  Float   @default(0) @map("current_value")
+  unit          String
+
+  // Period
+  period        String  @default("DAILY") // DAILY, WEEKLY, MONTHLY
+  startDate     DateTime @map("start_date")
+  endDate       DateTime? @map("end_date")
+
+  // Progress
+  progressPercent Float   @default(0) @map("progress_percent")
+  streakDays     Int      @default(0) @map("streak_days")
+  bestStreak     Int      @default(0) @map("best_streak")
+
+  // Settings
+  icon       String  @default("target")
+  color      String  @default("#6366f1")
+  isActive   Boolean @default(true) @map("is_active")
+
+  metadata  String   @default("{}")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, type, isActive])
+  @@map("health_goals")
+}

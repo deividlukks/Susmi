@@ -1,0 +1,305 @@
+.container {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.header h1 { font-size: 1.75rem; font-weight: 600; color: var(--text-primary); }
+.header p { color: var(--text-secondary); margin-top: 0.25rem; }
+
+.headerActions { display: flex; gap: 0.75rem; }
+
+.addButton, .secondaryButton {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.75rem 1.25rem; border: none; border-radius: 8px;
+    font-weight: 500; cursor: pointer; transition: all 0.2s;
+}
+
+.addButton { background: var(--primary); color: white; }
+.addButton:hover { background: var(--primary-dark); }
+
+.secondaryButton { background: var(--bg-tertiary); color: var(--text-primary); }
+.secondaryButton:hover { background: var(--border-color); }
+
+.statsGrid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem; margin-bottom: 2rem;
+}
+
+.statCard {
+    background: var(--bg-secondary); border: 1px solid var(--border-color);
+    border-radius: 12px; padding: 1.25rem; display: flex; align-items: center; gap: 1rem;
+}
+
+.statIcon {
+    width: 48px; height: 48px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+}
+
+.statIcon.red { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+.statIcon.blue { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+.statIcon.purple { background: rgba(139, 92, 246, 0.1); color: #8b5cf6; }
+.statIcon.green { background: rgba(34, 197, 94, 0.1); color: #22c55e; }
+
+.statInfo { display: flex; flex-direction: column; }
+.statValue { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); }
+.statLabel { font-size: 0.875rem; color: var(--text-secondary); }
+
+.tabs {
+    display: flex; gap: 0.5rem; margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;
+}
+
+.tab {
+    display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem;
+    border: none; background: transparent; color: var(--text-secondary);
+    font-weight: 500; cursor: pointer; border-radius: 8px; transition: all 0.2s;
+}
+
+.tab:hover { background: var(--bg-tertiary); color: var(--text-primary); }
+.tab.active { background: var(--primary); color: white; }
+
+.tabContent { min-height: 400px; }
+
+.overviewGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+@media (max-width: 1024px) { .overviewGrid { grid-template-columns: 1fr; } }
+
+.section {
+    background: var(--bg-secondary); border: 1px solid var(--border-color);
+    border-radius: 12px; padding: 1.5rem;
+}
+
+.sectionHeader {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;
+}
+
+.sectionHeader h2 { font-size: 1.1rem; font-weight: 600; color: var(--text-primary); }
+
+.sectionHeader button {
+    display: flex; align-items: center; gap: 0.25rem; padding: 0.5rem 0.75rem;
+    background: transparent; border: 1px solid var(--border-color); border-radius: 6px;
+    color: var(--text-secondary); font-size: 0.875rem; cursor: pointer;
+}
+
+.sectionHeader button:hover { background: var(--bg-tertiary); color: var(--text-primary); }
+
+.scheduleList, .workoutsList { display: flex; flex-direction: column; gap: 0.75rem; }
+
+.scheduleItem {
+    display: flex; align-items: center; gap: 1rem; padding: 0.75rem;
+    border-radius: 8px; background: var(--bg-tertiary);
+}
+
+.scheduleTime {
+    display: flex; align-items: center; gap: 0.5rem;
+    font-weight: 600; color: var(--primary); min-width: 70px;
+}
+
+.scheduleInfo { flex: 1; }
+.medName { display: block; font-weight: 500; color: var(--text-primary); }
+.medDosage { font-size: 0.8rem; color: var(--text-secondary); }
+
+.checkButton {
+    width: 36px; height: 36px; border-radius: 50%;
+    border: 2px solid var(--border-color); background: transparent;
+    color: var(--text-secondary); cursor: pointer; transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center;
+}
+
+.checkButton:hover { border-color: var(--primary); color: var(--primary); }
+.checkButton.checked { background: var(--primary); border-color: var(--primary); color: white; }
+
+.workoutItem {
+    display: flex; align-items: center; gap: 1rem; padding: 0.75rem;
+    border-radius: 8px; transition: background 0.2s;
+}
+
+.workoutItem:hover { background: var(--bg-tertiary); }
+
+.workoutIcon {
+    width: 40px; height: 40px; border-radius: 10px;
+    background: rgba(34, 197, 94, 0.1); color: #22c55e;
+    display: flex; align-items: center; justify-content: center;
+}
+
+.workoutInfo { flex: 1; }
+.workoutName { display: block; font-weight: 500; color: var(--text-primary); }
+.workoutMeta { font-size: 0.8rem; color: var(--text-secondary); }
+
+.medicationsGrid, .workoutsGrid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;
+}
+
+.medicationCard, .workoutCard {
+    background: var(--bg-secondary); border: 1px solid var(--border-color);
+    border-radius: 12px; padding: 1.5rem; transition: all 0.2s;
+}
+
+.medicationCard:hover, .workoutCard:hover { border-color: var(--primary); }
+
+.medCardHeader, .workoutCardHeader {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;
+    color: var(--primary);
+}
+
+.medFrequency, .workoutDate {
+    font-size: 0.75rem; font-weight: 500; color: var(--text-secondary);
+    background: var(--bg-tertiary); padding: 0.25rem 0.5rem; border-radius: 4px;
+}
+
+.medicationCard h3, .workoutCard h3 {
+    font-size: 1.1rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem;
+}
+
+.medicationCard .medDosage { color: var(--text-secondary); margin-bottom: 0.75rem; }
+
+.medTimes { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.75rem; }
+
+.timeTag {
+    padding: 0.25rem 0.5rem; background: var(--bg-tertiary);
+    border-radius: 4px; font-size: 0.8rem; color: var(--text-primary);
+}
+
+.medStock {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 0.8rem; color: var(--text-secondary);
+}
+
+.lowStock { color: #ef4444; font-weight: 500; }
+
+.workoutStats {
+    display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 0.75rem;
+}
+
+.workoutStat {
+    display: flex; align-items: center; gap: 0.5rem;
+    font-size: 0.9rem; color: var(--text-secondary);
+}
+
+.workoutNotes { font-size: 0.875rem; color: var(--text-secondary); font-style: italic; }
+
+.addMedCard {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 0.75rem; padding: 2rem; background: transparent;
+    border: 2px dashed var(--border-color); border-radius: 12px;
+    color: var(--text-secondary); cursor: pointer; transition: all 0.2s; min-height: 200px;
+}
+
+.addMedCard:hover { border-color: var(--primary); color: var(--primary); background: var(--bg-tertiary); }
+
+.metricsGrid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem;
+}
+
+.metricCard {
+    background: var(--bg-secondary); border: 1px solid var(--border-color);
+    border-radius: 12px; padding: 1.5rem; text-align: center;
+}
+
+.metricIcon {
+    width: 48px; height: 48px; margin: 0 auto 1rem;
+    background: var(--bg-tertiary); border-radius: 12px;
+    display: flex; align-items: center; justify-content: center; color: var(--primary);
+}
+
+.metricCard h3 { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.5rem; }
+.metricValue { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); display: block; }
+.metricDate { font-size: 0.75rem; color: var(--text-secondary); }
+
+/* Modal */
+.modalOverlay {
+    position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5);
+    display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 1rem;
+}
+
+.modal {
+    background: var(--bg-secondary); border-radius: 16px;
+    width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto;
+}
+
+.modalHeader {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1.5rem; border-bottom: 1px solid var(--border-color);
+}
+
+.modalHeader h2 { font-size: 1.25rem; font-weight: 600; color: var(--text-primary); }
+
+.modalHeader button {
+    padding: 0.5rem; background: transparent; border: none;
+    color: var(--text-secondary); cursor: pointer; border-radius: 6px;
+}
+
+.modalBody { padding: 1.5rem; }
+
+.modalFooter {
+    display: flex; justify-content: flex-end; gap: 0.75rem;
+    padding: 1.5rem; border-top: 1px solid var(--border-color);
+}
+
+.formGroup { margin-bottom: 1rem; }
+.formGroup label {
+    display: block; font-size: 0.875rem; font-weight: 500;
+    color: var(--text-primary); margin-bottom: 0.5rem;
+}
+
+.formGroup input, .formGroup select, .formGroup textarea {
+    width: 100%; padding: 0.75rem 1rem; background: var(--bg-primary);
+    border: 1px solid var(--border-color); border-radius: 8px;
+    color: var(--text-primary); font-size: 0.9rem;
+}
+
+.formGroup input:focus, .formGroup select:focus, .formGroup textarea:focus {
+    outline: none; border-color: var(--primary);
+}
+
+.formRow { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+.timesList { display: flex; flex-direction: column; gap: 0.5rem; }
+
+.timeInput { display: flex; gap: 0.5rem; }
+.timeInput input { flex: 1; }
+.timeInput button {
+    padding: 0.5rem; background: transparent; border: 1px solid var(--border-color);
+    border-radius: 6px; color: var(--text-secondary); cursor: pointer;
+}
+
+.addTimeBtn {
+    display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+    padding: 0.5rem; background: transparent; border: 1px dashed var(--border-color);
+    border-radius: 6px; color: var(--text-secondary); cursor: pointer; font-size: 0.875rem;
+}
+
+.addTimeBtn:hover { border-color: var(--primary); color: var(--primary); }
+
+.btnPrimary {
+    display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.5rem;
+    background: var(--primary); color: white; border: none; border-radius: 8px;
+    font-weight: 500; cursor: pointer;
+}
+
+.btnSecondary {
+    padding: 0.75rem 1.5rem; background: transparent; color: var(--text-primary);
+    border: 1px solid var(--border-color); border-radius: 8px; font-weight: 500; cursor: pointer;
+}
+
+.loading {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 4rem; color: var(--text-secondary);
+}
+
+.spinner {
+    width: 40px; height: 40px; border: 3px solid var(--border-color);
+    border-top-color: var(--primary); border-radius: 50%;
+    animation: spin 1s linear infinite; margin-bottom: 1rem;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.emptyText { text-align: center; color: var(--text-secondary); padding: 2rem; }
