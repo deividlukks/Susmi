@@ -9,14 +9,21 @@ dist/
 build/
 out/
 
-# Environment
+# Environment (local/secrets)
 .env
 .env copy
-.env.example
 .env.local
 .env.*.local
 .env.vercel
 .env.railway
+.env.production
+
+# Generated deploy configs (do not commit!)
+.env.railway.*
+.env.vercel.*
+
+# Keep .env.example for reference
+!.env.example
 
 # IDE
 .vscode/

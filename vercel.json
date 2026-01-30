@@ -1,0 +1,21 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "version": 2,
+  "buildCommand": "pnpm build --filter=@susmi/web",
+  "devCommand": "pnpm dev --filter=@susmi/web",
+  "installCommand": "pnpm install",
+  "framework": "nextjs",
+  "outputDirectory": "apps/web/.next",
+  "env": {
+    "NEXT_PUBLIC_API_URL": "@api_url",
+    "NEXT_PUBLIC_SUPABASE_URL": "@supabase_url",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "@supabase_anon_key"
+  },
+  "build": {
+    "env": {
+      "NEXT_PUBLIC_API_URL": "@api_url",
+      "NEXT_PUBLIC_SUPABASE_URL": "@supabase_url",
+      "NEXT_PUBLIC_SUPABASE_ANON_KEY": "@supabase_anon_key"
+    }
+  }
+}

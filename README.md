@@ -73,30 +73,41 @@ pnpm dev
 
 O projeto está configurado para deploy em:
 
-- **Backend**: Railway (NestJS API)
+- **Backend API**: Railway (NestJS + Prisma)
+- **AI Service**: Railway (FastAPI)
 - **Frontend**: Vercel (Next.js)
 - **Database**: Supabase (PostgreSQL)
-- **Cache**: Upstash (Redis)
 
-### Guias de Deploy
+### 📖 Guias de Deploy
 
-- **[📖 Guia Completo de Deploy](./docs/DEPLOYMENT.md)** - Passo a passo detalhado
-- **[⚡ Quick Start Deploy](./docs/DEPLOY_QUICKSTART.md)** - Deploy rápido em 10 passos
+- **[📖 Guia Completo](./DEPLOY.md)** - Instruções detalhadas passo a passo
+- **[⚡ Quick Start](./DEPLOY_QUICKSTART.md)** - Deploy rápido em 25 minutos
+- **[🔧 Script de Setup](./scripts/setup-deploy.sh)** - Automatiza configuração de variáveis
 
-### Configuração Rápida
+### ⚡ Deploy Rápido
 
-1. **Supabase**: Criar database PostgreSQL
-2. **Upstash**: Criar Redis database
-3. **Railway**: Deploy backend (variáveis em `.env.railway`)
-4. **Vercel**: Deploy frontend (variáveis em `.env.vercel`)
+```bash
+# 1. Configure variáveis de ambiente automaticamente
+bash scripts/setup-deploy.sh
 
-Veja os arquivos `.env.production.example` em cada app para referência completa.
+# 2. Deploy na Railway (API + AI Service)
+# - Criar projeto → Deploy from GitHub
+# - Adicionar variáveis de .env.railway.api e .env.railway.ai
+
+# 3. Deploy na Vercel (Frontend)
+# - Import project → Adicionar variáveis de .env.vercel.frontend
+
+# Pronto! 🎉
+```
+
+Veja [DEPLOY.md](./DEPLOY.md) para instruções completas.
 
 ## 📚 Documentação
 
-- [Guia de Deploy](./docs/DEPLOYMENT.md)
-- [Quick Start Deploy](./docs/DEPLOY_QUICKSTART.md)
-- [Relatório de Refatoração](./docs/REFACTORING_REPORT.md)
+- [📖 Guia Completo de Deploy](./DEPLOY.md)
+- [⚡ Deploy Quick Start](./DEPLOY_QUICKSTART.md)
+- [🔧 Scripts de Deploy](./scripts/README.md)
+- [📝 Variáveis de Ambiente](./.env.production)
 
 ## 📄 Licença
 
